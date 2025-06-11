@@ -1,0 +1,1864 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduLearn UPN</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* General Transitions and Animations */
+        .sidebar {
+            transition: transform 0.3s ease-in-out;
+        }
+        .hidden-sidebar {
+            transform: translateX(-100%);
+        }
+        .nav-item.active {
+            background-color: #dbeafe;
+            color: #2563eb;
+        }
+        .course-card {
+            transition: all 0.3s ease;
+        }
+        .course-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* List View Specific Styles */
+        .course-list-view .course-card {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+        }
+        .course-list-view .course-card > div:first-child { /* Image/Icon container */
+            width: 120px;
+            height: 120px;
+            min-width: 120px; /* Prevent shrinking */
+            margin-right: 1.5rem;
+            border-radius: 0.5rem;
+            flex-shrink: 0; /* Prevent the image/icon container from shrinking */
+        }
+        .course-list-view .course-card .p-6 {
+            padding: 0; /* Remove default padding as it's handled by card */
+            flex-grow: 1;
+        }
+        .course-list-view .course-card h3 {
+            font-size: 1.25rem;
+        }
+        .course-list-view .course-card .text-sm.mb-3 {
+            margin-bottom: 0.5rem;
+        }
+        .course-list-view .course-card .text-gray-700.text-sm.mb-4 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 0.75rem;
+        }
+        .course-list-view .course-card .flex.items-center.text-sm.text-gray-500.mb-4 {
+            margin-bottom: 0.75rem;
+        }
+        .course-list-view .course-card .flex.items-center.mb-4 {
+            margin-bottom: 1rem;
+        }
+        .course-list-view .course-card .flex.space-x-2 {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .course-list-view .course-card button {
+            flex: none; /* Override flex-1 for consistent button width in list view */
+            width: auto; /* Adjust button width */
+            padding: 0.5rem 1rem;
+        }
+
+        /* Certificate styles */
+        .certificate-card {
+            background: linear-gradient(to right, #60a5fa, #8b5cf6);
+            color: white;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .certificate-card::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 2px dashed rgba(255, 255, 255, 0.5);
+            border-radius: 0.5rem;
+        }
+        .certificate-card h3 {
+            font-size: 1.75rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .certificate-card p {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+        .certificate-card .download-btn {
+            background-color: white;
+            color: #2563eb;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px; /* pill shape */
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+        .certificate-card .download-btn:hover {
+            background-color: #e0f2fe;
+            transform: translateY(-2px);
+        }
+
+        /* Calendar styles */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+            text-align: center;
+        }
+        .calendar-day {
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            background-color: #f3f4f6;
+            cursor: pointer;
+            position: relative;
+        }
+        .calendar-day.current-month {
+            background-color: #e5e7eb;
+        }
+        .calendar-day.today {
+            background-color: #dbeafe;
+            font-weight: bold;
+            color: #2563eb;
+            border: 1px solid #93c5fd;
+        }
+        .calendar-day.has-event {
+            background-color: #bfdbfe;
+            color: #1e40af;
+            font-weight: bold;
+        }
+        .calendar-day.has-event:hover {
+            background-color: #93c5fd;
+        }
+        .calendar-event {
+            font-size: 0.75rem;
+            color: #1e40af;
+            line-height: 1;
+            margin-top: 0.25rem;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        .event-dot {
+            position: absolute;
+            bottom: 3px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background-color: #ef4444; /* Red dot for events */
+            border-radius: 50%;
+        }
+
+        /* Forum styles */
+        .forum-topic {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+        }
+        .forum-topic:hover {
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        .forum-topic h4 {
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .forum-topic p {
+            color: #4b5563;
+        }
+        .forum-topic-meta {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 flex">
+    <aside id="sidebar" class="sidebar fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform -translate-x-full lg:translate-x-0 lg:static lg:inset-0">
+        <div class="flex flex-col h-full">
+            <div class="p-4 border-b flex items-center justify-center lg:justify-start">
+                <div class="w-8 h-8 flex items-center justify-center">
+                    <svg width="32" height="32" viewBox="0 0 200 200" class="drop-shadow-sm">
+                        <polygon points="100,10 170,40 190,100 170,160 100,190 30,160 10,100 30,40"
+                                 fill="#FFD700" stroke="#000" stroke-width="8"/>
+                        <ellipse cx="100" cy="100" rx="15" ry="25" fill="white" stroke="#000" stroke-width="2"/>
+                        <path d="M 85,80 L 90,85 L 110,85 L 115,80 L 110,90 L 90,90 Z" fill="white" stroke="#000" stroke-width="2"/>
+                        <ellipse cx="100" cy="45" rx="8" ry="6" fill="#4CAF50"/>
+                        <polygon points="100,42 102,45 100,48 98,45" fill="#FFD700"/>
+                    </svg>
+                </div>
+                <h1 class="ml-2 text-xl font-bold text-gray-800">VeteranLearn</h1>
+            </div>
+
+            <nav class="flex-1 px-4 py-6 space-y-2">
+                <a href="#" onclick="setActiveNav(this, 'dashboard')"
+                   class="nav-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-600">
+                    <i class="fas fa-home mr-3"></i>Dashboard
+                </a>
+                <a href="#" onclick="setActiveNav(this, 'courseList')"
+                   class="nav-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-600">
+                    <i class="fas fa-book mr-3"></i>Pilih Mata Kuliah
+                </a>
+                <a href="#" onclick="setActiveNav(this, 'myCourses')"
+                   class="nav-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-600">
+                    <i class="fas fa-book-open mr-3"></i>Kursus Saya
+                </a>
+                <a href="#" onclick="setActiveNav(this, 'progress')"
+                   class="nav-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-600">
+                    <i class="fas fa-chart-line mr-3"></i>Progress
+                </a>
+                <a href="#" onclick="setActiveNav(this, 'forum')"
+                   class="nav-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-600">
+                    <i class="fas fa-comments mr-3"></i>Forum Diskusi
+                </a>
+                <a href="#" onclick="setActiveNav(this, 'certificates')"
+                   class="nav-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-600">
+                    <i class="fas fa-certificate mr-3"></i>Sertifikat
+                </a>
+                <a href="#" onclick="setActiveNav(this, 'assignments')"
+                   class="nav-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-600">
+                    <i class="fas fa-tasks mr-3"></i>Tugas
+                </a>
+                <a href="#" onclick="setActiveNav(this, 'calendar')"
+                   class="nav-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-600">
+                    <i class="fas fa-calendar mr-3"></i>Kalender
+                </a>
+            </nav>
+
+            <div class="p-4 border-t">
+                <div class="flex items-center space-x-3">
+                    <img src="https://via.placeholder.com/40" alt="User" class="w-10 h-10 rounded-full">
+                    <div>
+                        <p class="text-sm font-medium text-gray-800">John Doe</p>
+                        <p class="text-xs text-gray-500">Mahasiswa</p>
+                    </div>
+                </div>
+                <button class="mt-3 w-full text-left px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg">
+                    <i class="fas fa-cog mr-2"></i>Pengaturan
+                </button>
+                <button class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Keluar
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col min-h-screen">
+        <header class="bg-white shadow-sm border-b lg:ml-0">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-4">
+                    <div class="flex items-center">
+                        <button onclick="toggleSidebar()" class="p-2 rounded-md hover:bg-gray-100 lg:hidden">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <div class="flex items-center ml-4 lg:hidden">
+                            <div class="w-8 h-8 flex items-center justify-center">
+                                <svg width="32" height="32" viewBox="0 0 200 200" class="drop-shadow-sm">
+                                    <polygon points="100,10 170,40 190,100 170,160 100,190 30,160 10,100 30,40"
+                                             fill="#FFD700" stroke="#000" stroke-width="8"/>
+                                    <ellipse cx="100" cy="100" rx="15" ry="25" fill="white" stroke="#000" stroke-width="2"/>
+                                    <path d="M 85,80 L 90,85 L 110,85 L 115,80 L 110,90 L 90,90 Z" fill="white" stroke="#000" stroke-width="2"/>
+                                    <ellipse cx="100" cy="45" rx="8" ry="6" fill="#4CAF50"/>
+                                    <polygon points="100,42 102,45 100,48 98,45" fill="#FFD700"/>
+                                </svg>
+                            </div>
+                            <h1 class="ml-2 text-xl font-bold text-gray-800">EduLearn UPN</h1>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-4">
+                        <div class="relative hidden sm:block">
+                            <input type="text" id="courseSearch" placeholder="Cari kursus..."
+                                   class="w-64 p-2 pl-8 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                        </div>
+                        <button class="p-2 text-gray-600 hover:text-gray-800 relative">
+                            <i class="fas fa-bell"></i>
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
+                        </button>
+                        <div class="flex items-center cursor-pointer hover:bg-gray-50 p-2 rounded-lg">
+                            <img src="https://via.placeholder.com/32" alt="Profile" class="w-8 h-8 rounded-full">
+                            <span id="userName" class="ml-2 text-sm font-medium">Mahasiswa</span>
+                            <i class="fas fa-chevron-down ml-1 text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 p-6">
+            <div id="courseListContent" class="content-section">
+                <div class="mb-6">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Pilih Mata Kuliah</h2>
+                    <p class="text-gray-600">Jelajahi dan daftar kursus yang tersedia</p>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+                    <div class="flex flex-wrap gap-4 items-center">
+                        <select id="categoryFilter" class="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="filterCourses('courseList')">
+                            <option value="">Semua Kategori</option>
+                            <option value="data-science">Data Science</option>
+                            <option value="design">Design</option>
+                            <option value="programming">Programming</option>
+                            <option value="business">Business</option>
+                        </select>
+                        <select id="levelFilter" class="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="filterCourses('courseList')">
+                            <option value="">Tingkat Kesulitan</option>
+                            <option value="beginner">Pemula</option>
+                            <option value="intermediate">Menengah</option>
+                            <option value="advanced">Lanjutan</option>
+                        </select>
+                        <select id="sortFilter" class="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="sortCourses('courseList')">
+                            <option value="newest">Terbaru</option>
+                            <option value="popular">Terpopuler</option>
+                            <option value="rating">Rating Tertinggi</option>
+                        </select>
+                        <div class="flex-1"></div>
+                        <button onclick="toggleView()" class="p-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                            <i id="viewIcon" class="fas fa-th-large"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="courseListGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="course-card bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg" data-course-id="ds_dasar" data-category="data-science" data-level="beginner" data-rating="4.8" data-popularity="120" data-newness="1" data-enrolled="false">
+                        <div class="h-48 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center relative">
+                            <i class="fas fa-database text-white text-4xl"></i>
+                            <div class="absolute top-3 right-3 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                                Baru
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-xl font-semibold">Data Science Dasar</h3>
+                                <div class="flex items-center text-yellow-500">
+                                    <i class="fas fa-star text-sm"></i>
+                                    <span class="text-sm text-gray-600 ml-1">4.8</span>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-3">Dosen: Dr. Anisa Rahma</p>
+                            <p class="text-gray-700 text-sm mb-4">Pelajari dasar-dasar data science mulai dari statistik hingga machine learning untuk pemula.</p>
+                            <div class="flex items-center text-sm text-gray-500 mb-4">
+                                <i class="fas fa-clock mr-1"></i>
+                                <span>10 jam</span>
+                                <span class="mx-2">•</span>
+                                <i class="fas fa-users mr-1"></i>
+                                <span>120 siswa</span>
+                                <span class="mx-2">•</span>
+                                <i class="fas fa-play-circle mr-1"></i>
+                                <span>15 video</span>
+                            </div>
+                            <div class="flex items-center mb-4">
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mr-2">Pemula</span>
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">Sertifikat</span>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="previewCourse('ds_dasar')" class="flex-1 px-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition">
+                                    <i class="fas fa-eye mr-1"></i>Preview
+                                </button>
+                                <button onclick="enrollCourse(this, 'ds_dasar')" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                                    <i class="fas fa-plus mr-1"></i>Daftar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="course-card bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg" data-course-id="uiux_design" data-category="design" data-level="intermediate" data-rating="4.9" data-popularity="85" data-newness="0" data-enrolled="false">
+                        <div class="h-48 bg-gradient-to-r from-purple-500 to-pink-600 flex items-center justify-center relative">
+                            <i class="fas fa-paint-brush text-white text-4xl"></i>
+                            <div class="absolute top-3 right-3 bg-orange-500 text-white text-xs px-2 py-1 rounded-full">
+                                Populer
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-xl font-semibold">UI/UX Design</h3>
+                                <div class="flex items-center text-yellow-500">
+                                    <i class="fas fa-star text-sm"></i>
+                                    <span class="text-sm text-gray-600 ml-1">4.9</span>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-3">Dosen: Irfan Rahmat, S.Ds</p>
+                            <p class="text-gray-700 text-sm mb-4">Kuasai prinsip desain user interface dan user experience untuk menciptakan produk digital yang menarik.</p>
+                            <div class="flex items-center text-sm text-gray-500 mb-4">
+                                <i class="fas fa-clock mr-1"></i>
+                                <span>8 jam</span>
+                                <span class="mx-2">•</span>
+                                <i class="fas fa-users mr-1"></i>
+                                <span>85 siswa</span>
+                                <span class="mx-2">•</span>
+                                <i class="fas fa-play-circle mr-1"></i>
+                                <span>12 video</span>
+                            </div>
+                            <div class="flex items-center mb-4">
+                                <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full mr-2">Menengah</span>
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">Sertifikat</span>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="previewCourse('uiux_design')" class="flex-1 px-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition">
+                                    <i class="fas fa-eye mr-1"></i>Preview
+                                </button>
+                                <button onclick="enrollCourse(this, 'uiux_design')" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                                    <i class="fas fa-plus mr-1"></i>Daftar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="course-card bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg" data-course-id="web_dev" data-category="programming" data-level="intermediate" data-rating="4.7" data-popularity="200" data-newness="0" data-enrolled="false">
+                        <div class="h-48 bg-gradient-to-r from-green-500 to-teal-600 flex items-center justify-center">
+                            <i class="fas fa-code text-white text-4xl"></i>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-xl font-semibold">Web Development</h3>
+                                <div class="flex items-center text-yellow-500">
+                                    <i class="fas fa-star text-sm"></i>
+                                    <span class="text-sm text-gray-600 ml-1">4.7</span>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-3">Dosen: Prof. Budi Santoso</p>
+                            <p class="text-gray-700 text-sm mb-4">Belajar membuat website modern dengan HTML, CSS, JavaScript, dan framework terkini.</p>
+                            <div class="flex items-center text-sm text-gray-500 mb-4">
+                                <i class="fas fa-clock mr-1"></i>
+                                <span>15 jam</span>
+                                <span class="mx-2">•</span>
+                                <i class="fas fa-users mr-1"></i>
+                                <span>200 siswa</span>
+                                <span class="mx-2">•</span>
+                                <i class="fas fa-play-circle mr-1"></i>
+                                <span>25 video</span>
+                            </div>
+                            <div class="flex items-center mb-4">
+                                <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full mr-2">Menengah</span>
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">Sertifikat</span>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="previewCourse('web_dev')" class="flex-1 px-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition">
+                                    <i class="fas fa-eye mr-1"></i>Preview
+                                </button>
+                                <button onclick="enrollCourse(this, 'web_dev')" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                                    <i class="fas fa-plus mr-1"></i>Daftar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="course-card bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg" data-course-id="digital_marketing" data-category="business" data-level="beginner" data-rating="4.6" data-popularity="95" data-newness="0" data-enrolled="false">
+                        <div class="h-48 bg-gradient-to-r from-red-500 to-orange-600 flex items-center justify-center">
+                            <i class="fas fa-bullhorn text-white text-4xl"></i>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-xl font-semibold">Digital Marketing</h3>
+                                <div class="flex items-center text-yellow-500">
+                                    <i class="fas fa-star text-sm"></i>
+                                    <span class="text-sm text-gray-600 ml-1">4.6</span>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-3">Dosen: Maria Sari, MBA</p>
+                            <p class="text-gray-700 text-sm mb-4">Pelajari strategi pemasaran digital modern termasuk SEO, SEM, dan social media marketing.</p>
+                            <div class="flex items-center text-sm text-gray-500 mb-4">
+                                <i class="fas fa-clock mr-1"></i>
+                                <span>12 jam</span>
+                                <span class="mx-2">•</span>
+                                <i class="fas fa-users mr-1"></i>
+                                <span>95 siswa</span>
+                                <span class="mx-2">•</span>
+                                <i class="fas fa-play-circle mr-1"></i>
+                                <span>18 video</span>
+                            </div>
+                            <div class="flex items-center mb-4">
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mr-2">Pemula</span>
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">Sertifikat</span>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="previewCourse('digital_marketing')" class="flex-1 px-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition">
+                                    <i class="fas fa-eye mr-1"></i>Preview
+                                </button>
+                                <button onclick="enrollCourse(this, 'digital_marketing')" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                                    <i class="fas fa-plus mr-1"></i>Daftar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="emptyStateCourseList" class="hidden text-center py-12">
+                    <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-600 mb-2">Tidak ada kursus ditemukan</h3>
+                    <p class="text-gray-500">Coba ubah filter pencarian Anda</p>
+                </div>
+            </div>
+
+            <div id="myCoursesContent" class="content-section hidden">
+                <div class="mb-6">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Kursus Saya</h2>
+                    <p class="text-gray-600">Daftar kursus yang sudah Anda daftar</p>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+                    <div class="flex flex-wrap gap-4 items-center">
+                        <select id="myCoursesCategoryFilter" class="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="filterCourses('myCourses')">
+                            <option value="">Semua Kategori</option>
+                            <option value="data-science">Data Science</option>
+                            <option value="design">Design</option>
+                            <option value="programming">Programming</option>
+                            <option value="business">Business</option>
+                        </select>
+                        <select id="myCoursesLevelFilter" class="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="filterCourses('myCourses')">
+                            <option value="">Tingkat Kesulitan</option>
+                            <option value="beginner">Pemula</option>
+                            <option value="intermediate">Menengah</option>
+                            <option value="advanced">Lanjutan</option>
+                        </select>
+                        <select id="myCoursesSortFilter" class="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="sortCourses('myCourses')">
+                            <option value="newest">Terbaru</option>
+                            <option value="popular">Terpopuler</option>
+                            <option value="rating">Rating Tertinggi</option>
+                        </select>
+                        <div class="flex-1"></div>
+                        <button onclick="toggleView()" class="p-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                            <i id="myCoursesViewIcon" class="fas fa-th-large"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="myCoursesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div id="my-course-card-ds_dasar" class="course-card bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg hidden" data-course-id="ds_dasar" data-category="data-science" data-level="beginner" data-rating="4.8" data-popularity="120" data-newness="1">
+                        <div class="h-48 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center relative">
+                            <i class="fas fa-database text-white text-4xl"></i>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-xl font-semibold">Data Science Dasar</h3>
+                                <div class="flex items-center text-yellow-500">
+                                    <i class="fas fa-star text-sm"></i>
+                                    <span class="text-sm text-gray-600 ml-1">4.8</span>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-3">Dosen: Dr. Anisa Rahma</p>
+                            <p class="text-gray-700 text-sm mb-4">Pelajari dasar-dasar data science mulai dari statistik hingga machine learning untuk pemula.</p>
+                            <div class="flex items-center text-sm text-gray-500 mb-4">
+                                <i class="fas fa-clock mr-1"></i>
+                                <span>10 jam</span>
+                                <span class="mx-2">•</span>
+                                <i class="fas fa-users mr-1"></i>
+                                <span>120 siswa</span>
+                                <span class="mx-2">•</span>
+                                <i class="fas fa-play-circle mr-1"></i>
+                                <span>15 video</span>
+                            </div>
+                            <div class="flex items-center mb-4">
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mr-2">Pemula</span>
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">Sertifikat</span>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="previewCourse('ds_dasar')" class="flex-1 px-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition">
+                                    <i class="fas fa-eye mr-1"></i>Preview
+                                </button>
+                                <button onclick="startCourse('ds_dasar')" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                                    <i class="fas fa-play-circle mr-1"></i>Mulai Kursus
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="my-course-card-uiux_design" class="course-card bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg hidden" data-course-id="uiux_design" data-category="design" data-level="intermediate" data-rating="4.9" data-popularity="85" data-newness="0">
+                        <div class="h-48 bg-gradient-to-r from-purple-500 to-pink-600 flex items-center justify-center relative">
+                            <i class="fas fa-paint-brush text-white text-4xl"></i>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-xl font-semibold">UI/UX Design</h3>
+                                <div class="flex items-center text-yellow-500">
+                                    <i class="fas fa-star text-sm"></i>
+                                    <span class="text-sm text-gray-600 ml-1">4.9</span>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-3">Dosen: Irfan Rahmat, S.Ds</p>
+                            <p class="text-gray-700 text-sm mb-4">Kuasai prinsip desain user interface dan user experience untuk menciptakan produk digital yang menarik.</p>
+                            <div class="flex items-center text-sm text-gray-500 mb-4">
+                                <i class="fas fa-clock mr-1"></i>
+                                <span>8 jam</span>
+                                <span class="mx-2">•</span>
+                                <i class="fas fa-users mr-1"></i>
+                                <span>85 siswa</span>
+                                <span class="mx-2">•</span>
+                                <i class="fas fa-play-circle mr-1"></i>
+                                <span>12 video</span>
+                            </div>
+                            <div class="flex items-center mb-4">
+                                <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full mr-2">Menengah</span>
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">Sertifikat</span>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="previewCourse('uiux_design')" class="flex-1 px-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition">
+                                    <i class="fas fa-eye mr-1"></i>Preview
+                                </button>
+                                <button onclick="startCourse('uiux_design')" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                                    <i class="fas fa-play-circle mr-1"></i>Mulai Kursus
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="my-course-card-web_dev" class="course-card bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg hidden" data-course-id="web_dev" data-category="programming" data-level="intermediate" data-rating="4.7" data-popularity="200" data-newness="0">
+                        <div class="h-48 bg-gradient-to-r from-green-500 to-teal-600 flex items-center justify-center">
+                            <i class="fas fa-code text-white text-4xl"></i>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-xl font-semibold">Web Development</h3>
+                                <div class="flex items-center text-yellow-500">
+                                    <i class="fas fa-star text-sm"></i>
+                                    <span class="text-sm text-gray-600 ml-1">4.7</span>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-3">Dosen: Prof. Budi Santoso</p>
+                            <p class="text-gray-700 text-sm mb-4">Belajar membuat website modern dengan HTML, CSS, JavaScript, dan framework terkini.</p>
+                            <div class="flex items-center text-sm text-gray-500 mb-4">
+                                <i class="fas fa-clock mr-1"></i>
+                                <span>15 jam</span>
+                                <span class="mx-2">•</span>
+                                <i class="fas fa-users mr-1"></i>
+                                <span>200 siswa</span>
+                                <span class="mx-2">•</span>
+                                <i class="fas fa-play-circle mr-1"></i>
+                                <span>25 video</span>
+                            </div>
+                            <div class="flex items-center mb-4">
+                                <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full mr-2">Menengah</span>
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">Sertifikat</span>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="previewCourse('web_dev')" class="flex-1 px-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition">
+                                    <i class="fas fa-eye mr-1"></i>Preview
+                                </button>
+                                <button onclick="startCourse('web_dev')" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                                    <i class="fas fa-play-circle mr-1"></i>Mulai Kursus
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="my-course-card-digital_marketing" class="course-card bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg hidden" data-course-id="digital_marketing" data-category="business" data-level="beginner" data-rating="4.6" data-popularity="95" data-newness="0">
+                        <div class="h-48 bg-gradient-to-r from-red-500 to-orange-600 flex items-center justify-center">
+                            <i class="fas fa-bullhorn text-white text-4xl"></i>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-xl font-semibold">Digital Marketing</h3>
+                                <div class="flex items-center text-yellow-500">
+                                    <i class="fas fa-star text-sm"></i>
+                                    <span class="text-sm text-gray-600 ml-1">4.6</span>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-3">Dosen: Maria Sari, MBA</p>
+                            <p class="text-gray-700 text-sm mb-4">Pelajari strategi pemasaran digital modern termasuk SEO, SEM, dan social media marketing.</p>
+                            <div class="flex items-center text-sm text-gray-500 mb-4">
+                                <i class="fas fa-clock mr-1"></i>
+                                <span>12 jam</span>
+                                <span class="mx-2">•</span>
+                                <i class="fas fa-users mr-1"></i>
+                                <span>95 siswa</span>
+                                <span class="mx-2">•</span>
+                                <i class="fas fa-play-circle mr-1"></i>
+                                <span>18 video</span>
+                            </div>
+                            <div class="flex items-center mb-4">
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mr-2">Pemula</span>
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">Sertifikat</span>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="previewCourse('digital_marketing')" class="flex-1 px-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition">
+                                    <i class="fas fa-eye mr-1"></i>Preview
+                                </button>
+                                <button onclick="startCourse('digital_marketing')" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                                    <i class="fas fa-play-circle mr-1"></i>Mulai Kursus
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="emptyStateMyCourses" class="hidden text-center py-12 col-span-full">
+                        <i class="fas fa-clipboard-list text-6xl text-gray-300 mb-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-600 mb-2">Anda belum terdaftar di kursus apapun</h3>
+                        <p class="text-gray-500">Jelajahi <a href="#" onclick="setActiveNav(document.querySelector('.nav-item[onclick*=\'courseList\']'), 'courseList')" class="text-blue-600 hover:underline">Pilih Mata Kuliah</a> untuk mendaftar!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="progressContent" class="content-section hidden">
+                <div class="mb-6">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Progress Belajar</h2>
+                    <p class="text-gray-600">Lacak kemajuan Anda di setiap kursus dan selesaikan untuk mendapatkan sertifikat!</p>
+                </div>
+                <div id="progressGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div id="progress-card-ds_dasar" class="bg-white rounded-xl shadow-md p-6 hidden" data-course-id="ds_dasar">
+                        <h3 class="text-xl font-semibold mb-2">Data Science Dasar</h3>
+                        <p class="text-gray-600 mb-4">Dosen: Dr. Anisa Rahma</p>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+                            <div id="progress-bar-ds_dasar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%;"></div>
+                        </div>
+                        <p id="progress-text-ds_dasar" class="text-sm text-gray-700 mb-4">0% Selesai</p>
+                        <button onclick="simulateProgress('ds_dasar')" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Simulasi Selesaikan Materi</button>
+                    </div>
+                    <div id="progress-card-uiux_design" class="bg-white rounded-xl shadow-md p-6 hidden" data-course-id="uiux_design">
+                        <h3 class="text-xl font-semibold mb-2">UI/UX Design</h3>
+                        <p class="text-gray-600 mb-4">Dosen: Irfan Rahmat, S.Ds</p>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+                            <div id="progress-bar-uiux_design" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%;"></div>
+                        </div>
+                        <p id="progress-text-uiux_design" class="text-sm text-gray-700 mb-4">0% Selesai</p>
+                        <button onclick="simulateProgress('uiux_design')" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Simulasi Selesaikan Materi</button>
+                    </div>
+                    <div id="progress-card-web_dev" class="bg-white rounded-xl shadow-md p-6 hidden" data-course-id="web_dev">
+                        <h3 class="text-xl font-semibold mb-2">Web Development</h3>
+                        <p class="text-gray-600 mb-4">Dosen: Prof. Budi Santoso</p>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+                            <div id="progress-bar-web_dev" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%;"></div>
+                        </div>
+                        <p id="progress-text-web_dev" class="text-sm text-gray-700 mb-4">0% Selesai</p>
+                        <button onclick="simulateProgress('web_dev')" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Simulasi Selesaikan Materi</button>
+                    </div>
+                    <div id="progress-card-digital_marketing" class="bg-white rounded-xl shadow-md p-6 hidden" data-course-id="digital_marketing">
+                        <h3 class="text-xl font-semibold mb-2">Digital Marketing</h3>
+                        <p class="text-gray-600 mb-4">Dosen: Maria Sari, MBA</p>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+                            <div id="progress-bar-digital_marketing" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%;"></div>
+                        </div>
+                        <p id="progress-text-digital_marketing" class="text-sm text-gray-700 mb-4">0% Selesai</p>
+                        <button onclick="simulateProgress('digital_marketing')" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Simulasi Selesaikan Materi</button>
+                    </div>
+                    <div id="emptyStateProgress" class="hidden text-center py-12 col-span-full">
+                        <i class="fas fa-tasks text-6xl text-gray-300 mb-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-600 mb-2">Anda belum memulai kursus apapun</h3>
+                        <p class="text-gray-500">Daftar kursus di <a href="#" onclick="setActiveNav(document.querySelector('.nav-item[onclick*=\'courseList\']'), 'courseList')" class="text-blue-600 hover:underline">Pilih Mata Kuliah</a> untuk melihat progress!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="forumContent" class="content-section hidden">
+                <div class="mb-6">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Forum Diskusi</h2>
+                    <p class="text-gray-600">Bergabunglah dengan diskusi dan bertanya kepada teman.</p>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Topik Terbaru</h3>
+                    <div id="forumTopics" class="space-y-4">
+                        <div class="forum-topic p-4 border border-gray-200 rounded-lg">
+                            <h4 class="text-lg mb-1">Pertanyaan tentang Modul 1 Data Science Dasar</h4>
+                            <p class="text-gray-700 text-sm mb-2">Saya bingung dengan konsep regresi linear. Bisakah ada yang menjelaskan lebih detail?</p>
+                            <div class="flex justify-between items-center forum-topic-meta">
+                                <span>Diposting oleh: Alice (Mahasiswa)</span>
+                                <span><i class="fas fa-comment-dots mr-1"></i> 5 Balasan</span>
+                                <span><i class="fas fa-clock mr-1"></i> 2 jam lalu</span>
+                            </div>
+                            <button onclick="viewForumTopic('ds_dasar', 'Pertanyaan tentang Modul 1 Data Science Dasar')" class="mt-3 px-3 py-1 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 transition">Lihat Diskusi</button>
+                        </div>
+                        <div class="forum-topic p-4 border border-gray-200 rounded-lg">
+                            <h4 class="text-lg mb-1">Diskusi Desain Antarmuka Pengguna Responsif</h4>
+                            <p class="text-gray-700 text-sm mb-2">Ada yang punya tips dan trik untuk membuat desain responsif di berbagai perangkat?</p>
+                            <div class="flex justify-between items-center forum-topic-meta">
+                                <span>Diposting oleh: Irfan Rahmat, S.Ds (Dosen)</span>
+                                <span><i class="fas fa-comment-dots mr-1"></i> 12 Balasan</span>
+                                <span><i class="fas fa-clock mr-1"></i> Kemarin</span>
+                            </div>
+                            <button onclick="viewForumTopic('uiux_design', 'Diskusi Desain Antarmuka Pengguna Responsif')" class="mt-3 px-3 py-1 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 transition">Lihat Diskusi</button>
+                        </div>
+                        <div class="forum-topic p-4 border border-gray-200 rounded-lg">
+                            <h4 class="text-lg mb-1">Project Akhir Web Development: Backend API</h4>
+                            <p class="text-gray-700 text-sm mb-2">Saya kesulitan mengimplementasikan otentikasi JWT di Node.js. Adakah contoh yang lebih sederhana?</p>
+                            <div class="flex justify-between items-center forum-topic-meta">
+                                <span>Diposting oleh: Bob (Mahasiswa)</span>
+                                <span><i class="fas fa-comment-dots mr-1"></i> 8 Balasan</span>
+                                <span><i class="fas fa-clock mr-1"></i> 3 hari lalu</span>
+                            </div>
+                            <button onclick="viewForumTopic('web_dev', 'Project Akhir Web Development: Backend API')" class="mt-3 px-3 py-1 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 transition">Lihat Diskusi</button>
+                        </div>
+                    </div>
+                    <button class="mt-6 w-full py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">Buat Topik Baru</button>
+                </div>
+            </div>
+
+            <div id="certificatesContent" class="content-section hidden">
+                <div class="mb-6">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Sertifikat Saya</h2>
+                    <p class="text-gray-600">Lihat dan unduh sertifikat kursus yang telah Anda selesaikan.</p>
+                </div>
+                <div id="certificatesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div id="certificate-card-ds_dasar" class="certificate-card hidden" data-course-id="ds_dasar">
+                        <i class="fas fa-award text-5xl mb-4"></i>
+                        <h3>Sertifikat Kelulusan</h3>
+                        <p class="text-lg">Untuk Kursus: <span class="font-bold">Data Science Dasar</span></p>
+                        <p class="text-sm mb-4">Diberikan kepada: John Doe</p>
+                        <button onclick="downloadCertificate('Data Science Dasar')" class="download-btn">
+                            <i class="fas fa-download mr-2"></i>Unduh Sertifikat
+                        </button>
+                    </div>
+                    <div id="certificate-card-uiux_design" class="certificate-card hidden" data-course-id="uiux_design">
+                        <i class="fas fa-award text-5xl mb-4"></i>
+                        <h3>Sertifikat Kelulusan</h3>
+                        <p class="text-lg">Untuk Kursus: <span class="font-bold">UI/UX Design</span></p>
+                        <p class="text-sm mb-4">Diberikan kepada: John Doe</p>
+                        <button onclick="downloadCertificate('UI/UX Design')" class="download-btn">
+                            <i class="fas fa-download mr-2"></i>Unduh Sertifikat
+                        </button>
+                    </div>
+                    <div id="certificate-card-web_dev" class="certificate-card hidden" data-course-id="web_dev">
+                        <i class="fas fa-award text-5xl mb-4"></i>
+                        <h3>Sertifikat Kelulusan</h3>
+                        <p class="text-lg">Untuk Kursus: <span class="font-bold">Web Development</span></p>
+                        <p class="text-sm mb-4">Diberikan kepada: John Doe</p>
+                        <button onclick="downloadCertificate('Web Development')" class="download-btn">
+                            <i class="fas fa-download mr-2"></i>Unduh Sertifikat
+                        </button>
+                    </div>
+                    <div id="certificate-card-digital_marketing" class="certificate-card hidden" data-course-id="digital_marketing">
+                        <i class="fas fa-award text-5xl mb-4"></i>
+                        <h3>Sertifikat Kelulusan</h3>
+                        <p class="text-lg">Untuk Kursus: <span class="font-bold">Digital Marketing</span></p>
+                        <p class="text-sm mb-4">Diberikan kepada: John Doe</p>
+                        <button onclick="downloadCertificate('Digital Marketing')" class="download-btn">
+                            <i class="fas fa-download mr-2"></i>Unduh Sertifikat
+                        </button>
+                    </div>
+                    <div id="emptyStateCertificates" class="hidden text-center py-12 col-span-full">
+                        <i class="fas fa-certificate text-6xl text-gray-300 mb-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-600 mb-2">Belum ada sertifikat yang tersedia</h3>
+                        <p class="text-gray-500">Selesaikan kursus Anda untuk mendapatkan sertifikat!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="assignmentsContent" class="content-section hidden">
+                <div class="mb-6">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Tugas Saya</h2>
+                    <p class="text-gray-600">Lihat dan kirimkan tugas yang relevan dengan kursus Anda.</p>
+                </div>
+                <div id="assignmentsList" class="space-y-4">
+                    <div class="bg-white rounded-xl shadow-md p-6 hidden" id="assignment-card-ds_dasar-modul1">
+                        <h3 class="text-xl font-semibold mb-2">Tugas Modul 1: Pengantar Data Science</h3>
+                        <p class="text-gray-700 mb-2">Kursus: Data Science Dasar</p>
+                        <p class="text-gray-600 text-sm mb-3">Tenggat Waktu: <span class="font-medium text-red-500">15 Juni 2025</span></p>
+                        <p class="text-gray-700 text-sm mb-4">Buat laporan singkat mengenai peran data science dalam industri 4.0.</p>
+                        <div class="flex items-center space-x-2">
+                            <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Lihat Detail</button>
+                            <button class="px-4 py-2 border border-green-600 text-green-600 rounded-lg hover:bg-green-50 transition">Kirim Tugas</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-md p-6 hidden" id="assignment-card-uiux_design-final">
+                        <h3 class="text-xl font-semibold mb-2">Tugas Akhir: Prototyping Aplikasi</h3>
+                        <p class="text-gray-700 mb-2">Kursus: UI/UX Design</p>
+                        <p class="text-gray-600 text-sm mb-3">Tenggat Waktu: <span class="font-medium text-red-500">30 Juni 2025</span></p>
+                        <p class="text-gray-700 text-sm mb-4">Buat prototipe interaktif untuk aplikasi mobile pilihan Anda menggunakan Figma/Adobe XD.</p>
+                        <div class="flex items-center space-x-2">
+                            <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Lihat Detail</button>
+                            <button class="px-4 py-2 border border-green-600 text-green-600 rounded-lg hover:bg-green-50 transition">Kirim Tugas</button>
+                        </div>
+                    </div>
+                     <div id="emptyStateAssignments" class="hidden text-center py-12">
+                        <i class="fas fa-clipboard-check text-6xl text-gray-300 mb-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-600 mb-2">Tidak ada tugas yang aktif</h3>
+                        <p class="text-gray-500">Tugas akan muncul di sini setelah Anda mendaftar dan memulai kursus.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="calendarContent" class="content-section hidden">
+                <div class="mb-6">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Kalender Akademik & Kursus</h2>
+                    <p class="text-gray-600">Lihat jadwal kursus, tenggat waktu tugas, dan acara penting lainnya.</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <button id="prevMonth" class="p-2 rounded-full hover:bg-gray-200"><i class="fas fa-chevron-left"></i></button>
+                        <h3 id="currentMonthYear" class="text-xl font-semibold"></h3>
+                        <button id="nextMonth" class="p-2 rounded-full hover:bg-gray-200"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div class="calendar-grid mb-4 font-bold text-gray-700">
+                        <div>Min</div>
+                        <div>Sen</div>
+                        <div>Sel</div>
+                        <div>Rab</div>
+                        <div>Kam</div>
+                        <div>Jum</div>
+                        <div>Sab</div>
+                    </div>
+                    <div id="calendarDays" class="calendar-grid text-gray-800">
+                        </div>
+                    <div class="mt-6">
+                        <h4 class="text-lg font-semibold mb-3">Agenda Hari Ini:</h4>
+                        <ul id="todayEvents" class="space-y-2">
+                            <li class="text-gray-500">Tidak ada agenda hari ini.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div id="dashboardContent" class="content-section hidden">
+                <div class="mb-6">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Dashboard</h2>
+                    <p class="text-gray-600">Selamat datang di dashboard Anda, John Doe!</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Kursus Aktif</h3>
+                        <ul id="activeCoursesDashboard" class="list-disc list-inside text-gray-700">
+                            <li>Belum ada kursus aktif. Daftar di "Pilih Mata Kuliah"!</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Progress Singkat</h3>
+                        <p class="text-gray-700">Lanjutkan belajar untuk mendapatkan lebih banyak sertifikat!</p>
+                        <button onclick="setActiveNav(document.querySelector('.nav-item[onclick*=\'progress\']'), 'progress')" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Lihat Progress Lengkap</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="courseDetailContent" class="content-section hidden">
+                <button onclick="goBackToMyCourses()" class="text-blue-600 hover:underline mb-4 flex items-center">
+                    <i class="fas fa-arrow-left mr-2"></i> Kembali ke Kursus Saya
+                </button>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 id="courseDetailTitle" class="text-3xl font-bold text-gray-800 mb-4"></h2>
+                    <p id="courseDetailInstructor" class="text-gray-600 text-lg mb-4"></p>
+                    <p id="courseDetailDescription" class="text-gray-700 mb-6"></p>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2">
+                            <h3 class="text-2xl font-semibold text-gray-800 mb-4">Materi Pembelajaran</h3>
+                            <div id="courseMaterials" class="space-y-4">
+                                </div>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-semibold text-gray-800 mt-6 mb-4">Menu Kursus</h3>
+                            <ul class="space-y-2">
+                                <li><a href="#" onclick="showCourseSection('overview')" class="text-blue-600 hover:underline">Ringkasan</a></li>
+                                <li><a href="#" onclick="showCourseSection('modules')" class="text-blue-600 hover:underline">Modul & Materi</a></li>
+                                <li><a href="#" onclick="showCourseSection('quiz')" class="text-blue-600 hover:underline">Kuis & Ujian</a></li>
+                                <li><a href="#" onclick="showCourseSection('discussion')" class="text-blue-600 hover:underline">Forum Diskusi Kursus</a></li>
+                            </ul>
+
+                            <h3 class="text-2xl font-semibold text-gray-800 mt-6 mb-4">Progress Kursus</h3>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+                                <div id="courseDetailProgressBar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%;"></div>
+                            </div>
+                            <p id="courseDetailProgressText" class="text-sm text-gray-700">0% Selesai</p>
+                        </div>
+                    </div>
+
+                    <div id="courseOverview" class="mt-8">
+                        <h3 class="text-xl font-semibold mb-4">Ringkasan Kursus</h3>
+                        <p>Di bagian ini, Anda akan menemukan informasi umum tentang kursus, termasuk tujuan pembelajaran, prasyarat, dan hasil yang diharapkan.</p>
+                    </div>
+
+                    <div id="courseModules" class="mt-8 hidden">
+                        <h3 class="text-xl font-semibold mb-4">Modul & Materi</h3>
+                        <ul id="moduleList" class="space-y-4">
+                            </ul>
+                    </div>
+
+                    <div id="courseQuiz" class="mt-8 hidden">
+                        <h3 class="text-xl font-semibold mb-4">Kuis & Ujian</h3>
+                        <p>Setelah menyelesaikan semua materi, Anda dapat mengikuti kuis ini untuk menguji pemahaman Anda.</p>
+                        <button onclick="startQuiz()" class="mt-4 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">Mulai Kuis</button>
+                    </div>
+
+                    <div id="courseDiscussion" class="mt-8 hidden">
+                        <h3 class="text-xl font-semibold mb-4">Forum Diskusi Kursus</h3>
+                        <p>Diskusikan materi kursus, ajukan pertanyaan, dan berinteraksi dengan dosen serta sesama mahasiswa.</p>
+                        <button onclick="goToForum()" class="mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Buka Forum</button>
+                    </div>
+
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden hidden" onclick="closeSidebar()"></div>
+
+    <script>
+        let isGridView = true;
+        let activeContent = 'courseList';
+        const userName = "John Doe"; // Static user name for certificate generation
+        let currentCalendarDate = new Date(); // For calendar functionality
+
+        const courseData = {
+            "ds_dasar": {
+                title: "Data Science Dasar",
+                instructor: "Dr. Anisa Rahma",
+                description: "Pelajari dasar-dasar data science mulai dari statistik, analisis data, hingga pengantar machine learning untuk pemula. Kursus ini mencakup pengenalan Python untuk data science, manipulasi data dengan Pandas, visualisasi data dengan Matplotlib, dan model machine learning sederhana.",
+                duration: "10 jam",
+                students: "120 siswa",
+                videos: "15 video",
+                level: "Pemula",
+                hasCertificate: true,
+                modules: [
+                    { title: "Pengantar Data Science", type: "video", url: "https://www.youtube.com/embed/videoseries?list=PLfM8eA1Xg8-fP6q0m4o2W4n4p1b5o3f2D", description: "Materi video pengenalan data science." },
+                    { title: "Statistik Dasar untuk Data Science", type: "document", url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf", description: "Slide dan dokumen PDF tentang konsep statistik dasar." },
+                    { title: "Pengantar Python dan Pandas", type: "video", url: "https://www.youtube.com/embed/videoseries?list=PLfM8eA1Xg8-fP6q0m4o2W4n4p1b5o3f2D", description: "Video tutorial penggunaan Python dan library Pandas." },
+                    { title: "Visualisasi Data dengan Matplotlib", type: "slide", url: "https://docs.google.com/presentation/d/1B_h-A3h4L9_Q9X9X9X9X9X9X9X9X9X9X9X/edit?usp=sharing", description: "Materi slide cara membuat visualisasi data yang menarik." },
+                    { title: "Dasar Machine Learning", type: "video", url: "https://www.youtube.com/embed/videoseries?list=PLfM8eA1Xg8-fP6q0m4o2W4n4p1b5o3f2D", description: "Pengantar konsep dan algoritma machine learning sederhana." }
+                ],
+                quizUrl: "https://forms.gle/yourQuizLink", // Example Google Forms link
+                forumLink: "#", // Example forum link (or specific topic ID)
+                assignments: [
+                    { id: 'ds_dasar-modul1', title: 'Tugas Modul 1: Pengantar Data Science', dueDate: new Date('2025-06-15T23:59:59'), description: 'Buat laporan singkat mengenai peran data science dalam industri 4.0.', status: 'Belum Selesai', courseId: 'ds_dasar' }
+                ],
+                events: [
+                    { date: '2025-06-15', title: 'Tenggat Tugas Modul 1 DS', type: 'assignment' },
+                    { date: '2025-06-20', title: 'Live Session Data Prep', type: 'live' }
+                ]
+            },
+            "uiux_design": {
+                title: "UI/UX Design",
+                instructor: "Irfan Rahmat, S.Ds",
+                description: "Kuasai prinsip desain user interface (UI) dan user experience (UX) untuk menciptakan produk digital yang menarik, intuitif, dan mudah digunakan. Kursus ini mencakup dasar-dasar desain, wireframing, prototyping, dan usability testing.",
+                duration: "8 jam",
+                students: "85 siswa",
+                videos: "12 video",
+                level: "Menengah",
+                hasCertificate: true,
+                modules: [
+                    { title: "Pengantar UI/UX", type: "video", url: "https://www.youtube.com/embed/videoseries?list=PLfM8eA1Xg8-fP6q0m4o2W4n4p1b5o3f2D", description: "Video pengantar tentang perbedaan UI dan UX." },
+                    { title: "Prinsip Desain & Hirarki Visual", type: "slide", url: "https://docs.google.com/presentation/d/1B_h-A3h4L9_Q9X9X9X9X9X9X9X9X9X9X9X/edit?usp=sharing", description: "Slide tentang prinsip-prinsip dasar desain." },
+                    { title: "Wireframing & Prototyping Tools", type: "video", url: "https://www.youtube.com/embed/videoseries?list=PLfM8eA1Xg8-fP6q0m4o2W4n4p1b5o3f2D", description: "Tutorial penggunaan Figma atau Adobe XD." },
+                    { title: "Usability Testing & Feedback", type: "document", url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf", description: "Dokumen panduan melakukan usability testing." }
+                ],
+                quizUrl: "https://forms.gle/yourQuizLink",
+                forumLink: "#",
+                 assignments: [
+                    { id: 'uiux_design-final', title: 'Tugas Akhir: Prototyping Aplikasi', dueDate: new Date('2025-06-30T23:59:59'), description: 'Buat prototipe interaktif untuk aplikasi mobile pilihan Anda menggunakan Figma/Adobe XD.', status: 'Belum Selesai', courseId: 'uiux_design' }
+                ],
+                events: [
+                    { date: '2025-06-30', title: 'Tenggat Tugas Akhir UI/UX', type: 'assignment' },
+                    { date: '2025-07-05', title: 'Sesi Review UI/UX', type: 'meeting' }
+                ]
+            },
+            "web_dev": {
+                title: "Web Development",
+                instructor: "Prof. Budi Santoso",
+                description: "Belajar membuat website modern dengan HTML, CSS, JavaScript, dan framework terkini. Kursus ini akan membimbing Anda dari dasar-dasar web hingga membangun aplikasi web yang interaktif.",
+                duration: "15 jam",
+                students: "200 siswa",
+                videos: "25 video",
+                level: "Menengah",
+                hasCertificate: true,
+                modules: [
+                    { title: "HTML & CSS Dasar", type: "video", url: "https://www.youtube.com/embed/videoseries?list=PLfM8eA1Xg8-fP6q0m4o2W4n4p1b5o3f2D", description: "Video pengenalan HTML dan CSS untuk struktur dan styling web." },
+                    { title: "JavaScript Fundamental", type: "video", url: "https://www.youtube.com/embed/videoseries?list=PLfM8eA1Xg8-fP6q0m4o2W4n4p1b5o3f2D", description: "Materi video tentang dasar-dasar pemrograman JavaScript." },
+                    { title: "Pengantar React.js", type: "slide", url: "https://docs.google.com/presentation/d/1B_h-A3h4L9_Q9X9X9X9X9X9X9X9X9X9X9X/edit?usp=sharing", description: "Slide pengenalan framework JavaScript populer, React.js." },
+                    { title: "Membangun API dengan Node.js", type: "document", url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf", description: "Dokumen panduan membangun RESTful API." }
+                ],
+                quizUrl: "https://forms.gle/yourQuizLink",
+                forumLink: "#",
+                assignments: [
+                    { id: 'web_dev-api', title: 'Tugas Proyek: Backend API', dueDate: new Date('2025-07-10T23:59:59'), description: 'Buatlah RESTful API sederhana menggunakan Node.js dan Express.js.', status: 'Belum Selesai', courseId: 'web_dev' }
+                ],
+                events: [
+                    { date: '2025-07-10', title: 'Tenggat Tugas API WebDev', type: 'assignment' },
+                    { date: '2025-07-15', title: 'Ujian Akhir WebDev', type: 'exam' }
+                ]
+            },
+            "digital_marketing": {
+                title: "Digital Marketing",
+                instructor: "Maria Sari, MBA",
+                description: "Pelajari strategi pemasaran digital modern termasuk SEO (Search Engine Optimization), SEM (Search Engine Marketing), social media marketing, dan content marketing untuk meningkatkan visibilitas bisnis Anda secara online.",
+                duration: "12 jam",
+                students: "95 siswa",
+                videos: "18 video",
+                level: "Pemula",
+                hasCertificate: true,
+                modules: [
+                    { title: "Dasar-dasar Pemasaran Digital", type: "video", url: "https://www.youtube.com/embed/videoseries?list=PLfM8eA1Xg8-fP6q0m4o2W4n4p1b5o3f2D", description: "Video pengantar tentang ekosistem pemasaran digital." },
+                    { title: "Strategi SEO On-Page & Off-Page", type: "document", url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf", description: "Panduan optimasi mesin pencari." },
+                    { title: "Pemasaran Media Sosial Efektif", type: "slide", url: "https://docs.google.com/presentation/d/1B_h-A3h4L9_Q9X9X9X9X9X9X9X9X9X9X9X/edit?usp=sharing", description: "Materi slide tentang cara membangun strategi media sosial." },
+                    { title: "Analisis Data Pemasaran", type: "video", url: "https://www.youtube.com/embed/videoseries?list=PLfM8eA1Xg8-fP6q0m4o2W4n4p1b5o3f2D", description: "Video tentang penggunaan Google Analytics dan tools lainnya." }
+                ],
+                quizUrl: "https://forms.gle/yourQuizLink",
+                forumLink: "#",
+                assignments: [
+                    { id: 'digital_marketing-seo', title: 'Analisis Keyword SEO', dueDate: new Date('2025-07-20T23:59:59'), description: 'Lakukan riset keyword untuk niche tertentu dan buat strategi SEO singkat.', status: 'Belum Selesai', courseId: 'digital_marketing' }
+                ],
+                events: [
+                    { date: '2025-07-20', title: 'Tenggat Analisis SEO', type: 'assignment' }
+                ]
+            }
+        };
+
+        // Initialize enrolled courses from localStorage or set up default for demonstration
+        let enrolledCourses = JSON.parse(localStorage.getItem('enrolledCourses')) || {};
+        if (Object.keys(enrolledCourses).length === 0) {
+            // Set some dummy enrolled courses for demonstration if none are stored
+            enrolledCourses = {
+                "uiux_design": { enrolled: true, completed: false, progress: 30 },
+                "digital_marketing": { enrolled: true, completed: true, progress: 100 } // Example of a completed course
+            };
+            localStorage.setItem('enrolledCourses', JSON.stringify(enrolledCourses));
+        }
+
+        // --- Core Functions ---
+
+        function updateViewIcon() {
+            const currentViewIcon = document.getElementById(activeContent === 'courseList' ? 'viewIcon' : 'myCoursesViewIcon');
+            if (currentViewIcon) {
+                if (isGridView) {
+                    currentViewIcon.classList.remove('fa-list');
+                    currentViewIcon.classList.add('fa-th-large');
+                } else {
+                    currentViewIcon.classList.remove('fa-th-large');
+                    currentViewIcon.classList.add('fa-list');
+                }
+            }
+        }
+
+        function previewCourse(courseId) {
+            const course = courseData[courseId];
+            if (course) {
+                alert(`Preview kursus: ${course.title}\n\n${course.description}`);
+            }
+        }
+
+        function enrollCourse(buttonElement, courseId) {
+            const courseTitle = courseData[courseId].title;
+            const courseCardInCourseList = buttonElement.closest('.course-card');
+
+            if (enrolledCourses[courseId] && enrolledCourses[courseId].enrolled) {
+                alert(`Anda sudah terdaftar di kursus: ${courseTitle}. Memulai kursus!`);
+                startCourse(courseId);
+            } else {
+                if (confirm(`Apakah Anda yakin ingin mendaftar kursus ${courseTitle}?`)) {
+                    enrolledCourses[courseId] = { enrolled: true, completed: false, progress: 0 };
+                    localStorage.setItem('enrolledCourses', JSON.stringify(enrolledCourses));
+                    alert(`Berhasil mendaftar kursus: ${courseTitle}`);
+
+                    if (courseCardInCourseList) {
+                        const enrollButton = courseCardInCourseList.querySelector('button:last-child');
+                        if (enrollButton) {
+                            enrollButton.innerHTML = '<i class="fas fa-play-circle mr-1"></i>Mulai Kursus';
+                            enrollButton.onclick = () => startCourse(courseId);
+                            enrollButton.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                            enrollButton.classList.add('bg-green-600', 'hover:bg-green-700');
+                        }
+                    }
+
+                    // Re-render relevant sections
+                    filterCourses('myCourses');
+                    filterCourses('progress');
+                    updateDashboardActiveCourses();
+                    updateAssignments(); // Refresh assignments as new course might have new tasks
+                    generateCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth()); // Refresh calendar
+                }
+            }
+        }
+
+        function startCourse(courseId) {
+            setActiveNav(null, 'courseDetail');
+            loadCourseDetail(courseId);
+        }
+
+        function loadCourseDetail(courseId) {
+            const course = courseData[courseId];
+            if (!course) {
+                alert("Course not found!");
+                return;
+            }
+
+            document.getElementById('courseDetailTitle').textContent = course.title;
+            document.getElementById('courseDetailInstructor').textContent = `Dosen: ${course.instructor}`;
+            document.getElementById('courseDetailDescription').textContent = course.description;
+
+            const courseMaterials = document.getElementById('courseMaterials');
+            courseMaterials.innerHTML = '';
+
+            const moduleList = document.getElementById('moduleList');
+            moduleList.innerHTML = '';
+
+            course.modules.forEach((module, index) => {
+                const materialIcon = module.type === 'video' ? 'fa-video' : (module.type === 'slide' ? 'fa-file-powerpoint' : 'fa-file-alt');
+                const moduleItemHTML = `
+                    <li class="bg-gray-100 p-4 rounded-lg flex items-center shadow-sm">
+                        <i class="fas ${materialIcon} text-blue-600 mr-3 text-lg"></i>
+                        <div>
+                            <p class="font-semibold text-gray-800">${module.title}</p>
+                            <p class="text-sm text-gray-600">${module.description}</p>
+                            <a href="${module.url}" target="_blank" class="text-blue-500 hover:underline text-sm mt-1 inline-block">Buka Materi</a>
+                        </div>
+                    </li>
+                `;
+                moduleList.insertAdjacentHTML('beforeend', moduleItemHTML);
+            });
+
+            const courseProgress = enrolledCourses[courseId] ? enrolledCourses[courseId].progress : 0;
+            document.getElementById('courseDetailProgressBar').style.width = `${courseProgress}%`;
+            document.getElementById('courseDetailProgressText').textContent = `${courseProgress}% Selesai`;
+
+            localStorage.setItem('currentCourseDetailId', courseId);
+            showCourseSection('overview');
+        }
+
+        function goBackToMyCourses() {
+            const myCoursesNavItem = document.querySelector('.nav-item[onclick*=\'myCourses\']');
+            setActiveNav(myCoursesNavItem, 'myCourses');
+            localStorage.removeItem('currentCourseDetailId');
+        }
+
+        function showCourseSection(section) {
+            document.getElementById('courseOverview').classList.add('hidden');
+            document.getElementById('courseModules').classList.add('hidden');
+            document.getElementById('courseQuiz').classList.add('hidden');
+            document.getElementById('courseDiscussion').classList.add('hidden');
+
+            if (section === 'overview') {
+                document.getElementById('courseOverview').classList.remove('hidden');
+            } else if (section === 'modules') {
+                document.getElementById('courseModules').classList.remove('hidden');
+            } else if (section === 'quiz') {
+                document.getElementById('courseQuiz').classList.remove('hidden');
+            } else if (section === 'discussion') {
+                document.getElementById('courseDiscussion').classList.remove('hidden');
+            }
+        }
+
+        function startQuiz() {
+            const courseId = localStorage.getItem('currentCourseDetailId');
+            if (courseId && courseData[courseId].quizUrl) {
+                if (confirm(`Anda akan dialihkan ke halaman kuis untuk kursus ${courseData[courseId].title}. Lanjutkan?`)) {
+                    window.open(courseData[courseId].quizUrl, '_blank');
+                }
+            } else {
+                alert("Kuis tidak tersedia untuk kursus ini.");
+            }
+        }
+
+        function goToForum() {
+            const courseId = localStorage.getItem('currentCourseDetailId');
+            if (courseId && courseData[courseId].forumLink) {
+                 if (confirm(`Anda akan dialihkan ke forum diskusi untuk kursus ${courseData[courseId].title}. Lanjutkan?`)) {
+                    setActiveNav(document.querySelector('.nav-item[onclick*=\'forum\']'), 'forum');
+                 }
+            } else {
+                alert("Forum tidak tersedia untuk kursus ini.");
+            }
+        }
+
+        function simulateProgress(courseId) {
+            let currentProgress = enrolledCourses[courseId] ? enrolledCourses[courseId].progress : 0;
+            currentProgress += 20;
+            if (currentProgress > 100) currentProgress = 100;
+
+            if (enrolledCourses[courseId]) {
+                enrolledCourses[courseId].progress = currentProgress;
+                if (currentProgress === 100) {
+                    enrolledCourses[courseId].completed = true;
+                }
+                localStorage.setItem('enrolledCourses', JSON.stringify(enrolledCourses));
+            }
+
+            const progressBar = document.getElementById(`progress-bar-${courseId}`);
+            const progressText = document.getElementById(`progress-text-${courseId}`);
+            if (progressBar && progressText) {
+                progressBar.style.width = `${currentProgress}%`;
+                progressText.textContent = `${currentProgress}% Selesai`;
+            }
+
+            if (currentProgress === 100) {
+                alert(`Selamat! Anda telah menyelesaikan kursus ${courseData[courseId].title}!`);
+                if (courseData[courseId].hasCertificate) {
+                    const certificateCard = document.getElementById(`certificate-card-${courseId}`);
+                    if (certificateCard) {
+                        certificateCard.classList.remove('hidden');
+                    }
+                }
+            }
+            displayEmptyState('progress');
+            displayEmptyState('certificates');
+            updateDashboardActiveCourses();
+        }
+
+        function downloadCertificate(courseTitle) {
+            alert(`Sertifikat untuk kursus "${courseTitle}" sedang diunduh! (Simulasi)`);
+        }
+
+        function setActiveNav(element, sectionId) {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            if (element) {
+                element.classList.add('active');
+            } else {
+                const navItem = document.querySelector(`.nav-item[onclick*=\\'${sectionId}\\']`);
+                if (navItem) navItem.classList.add('active');
+            }
+
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.add('hidden');
+            });
+
+            const targetSection = document.getElementById(sectionId + 'Content');
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+            }
+
+            activeContent = sectionId;
+
+            if (activeContent === 'courseList' || activeContent === 'myCourses') {
+                filterCourses(activeContent);
+                sortCourses(activeContent);
+                updateViewIcon();
+                displayEmptyState(activeContent);
+            } else if (activeContent === 'progress') {
+                filterCourses(activeContent); // Re-evaluate which progress cards to show
+                displayEmptyState(activeContent);
+            } else if (activeContent === 'certificates') {
+                filterCourses(activeContent); // Re-evaluate which certificate cards to show
+                displayEmptyState(activeContent);
+            } else if (activeContent === 'dashboard') {
+                updateDashboardActiveCourses();
+            } else if (activeContent === 'assignments') {
+                updateAssignments(); // Load and display assignments
+                displayEmptyState(activeContent);
+            } else if (activeContent === 'calendar') {
+                generateCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth()); // Generate current month's calendar
+            }
+
+            closeSidebar();
+        }
+
+
+        function filterCourses(section) {
+            const categoryFilterId = section === 'courseList' ? 'categoryFilter' : `myCoursesCategoryFilter`;
+            const levelFilterId = section === 'courseList' ? 'levelFilter' : `myCoursesLevelFilter`;
+            const gridId = section === 'courseList' ? 'courseListGrid' : (section === 'myCourses' ? 'myCoursesGrid' : (section === 'progress' ? 'progressGrid' : 'certificatesGrid'));
+
+            const categoryFilter = document.getElementById(categoryFilterId) ? document.getElementById(categoryFilterId).value : '';
+            const levelFilter = document.getElementById(levelFilterId) ? document.getElementById(levelFilterId).value : '';
+
+            const courseGrid = document.getElementById(gridId);
+            // Select all potential cards in the grid (myCoursesGrid or progressGrid or certificatesGrid)
+            const allCards = courseGrid.querySelectorAll('.course-card, .bg-white.rounded-xl.shadow-md.p-6, .certificate-card');
+
+            allCards.forEach(card => {
+                const courseId = card.getAttribute('data-course-id');
+                const courseInfo = courseData[courseId];
+                if (!courseInfo) {
+                    card.style.display = 'none'; // Hide if no data
+                    return;
+                }
+
+                const category = courseInfo.category;
+                const level = courseInfo.level_key;
+
+                const categoryMatch = !categoryFilter || category === categoryFilter;
+                const levelMatch = !levelFilter || level === levelFilter;
+
+                let shouldDisplay = false;
+
+                if (section === 'courseList') {
+                    shouldDisplay = categoryMatch && levelMatch;
+                } else if (section === 'myCourses') {
+                    const enrolledStatus = enrolledCourses[courseId] && enrolledCourses[courseId].enrolled;
+                    // For myCourses, show only enrolled courses that match filters
+                    shouldDisplay = enrolledStatus && categoryMatch && levelMatch;
+                    // Also ensure the correct ID is being targeted.
+                    if (card.id !== `my-course-card-${courseId}`) { // If this is a card from original courseListGrid
+                         shouldDisplay = false; // Don't show it here.
+                    }
+                } else if (section === 'progress') {
+                    const enrolledStatus = enrolledCourses[courseId] && enrolledCourses[courseId].enrolled;
+                    // For progress, show only enrolled courses (filters don't apply to progress cards directly)
+                    shouldDisplay = enrolledStatus;
+                     if (card.id !== `progress-card-${courseId}`) {
+                         shouldDisplay = false;
+                    }
+                } else if (section === 'certificates') {
+                    const completedStatus = enrolledCourses[courseId] && enrolledCourses[courseId].completed;
+                    const hasCertificate = courseInfo.hasCertificate;
+                    // For certificates, show only completed courses with a certificate
+                    shouldDisplay = completedStatus && hasCertificate;
+                    if (card.id !== `certificate-card-${courseId}`) {
+                         shouldDisplay = false;
+                    }
+                }
+
+                if (shouldDisplay) {
+                    // Apply appropriate display style based on the section and view mode
+                    if ((section === 'courseList' || section === 'myCourses') && !isGridView) {
+                        card.style.display = 'flex'; // List view
+                    } else {
+                        card.style.display = 'block'; // Grid view or for progress/certificate cards
+                    }
+                    card.classList.add('fade-in');
+                } else {
+                    card.style.display = 'none';
+                    card.classList.remove('fade-in');
+                }
+            });
+
+            displayEmptyState(section);
+        }
+
+        function sortCourses(section) {
+            const sortFilterId = section === 'courseList' ? 'sortFilter' : `myCoursesSortFilter`;
+            const gridId = section === 'courseList' ? 'courseListGrid' : (section === 'myCourses' ? 'myCoursesGrid' : (section === 'progress' ? 'progressGrid' : 'certificatesGrid'));
+
+            const sortFilterElement = document.getElementById(sortFilterId);
+            const sortFilter = sortFilterElement ? sortFilterElement.value : 'newest';
+
+            const courseGrid = document.getElementById(gridId);
+            // Select only currently visible cards for sorting
+            const courseCards = Array.from(courseGrid.children).filter(card => card.style.display !== 'none');
+
+            courseCards.sort((a, b) => {
+                const courseIdA = a.getAttribute('data-course-id');
+                const courseIdB = b.getAttribute('data-course-id');
+
+                const courseInfoA = courseData[courseIdA] || {};
+                const courseInfoB = courseData[courseIdB] || {};
+
+                if (sortFilter === 'newest') {
+                    const newnessA = parseInt(courseInfoA.newness || 0);
+                    const newnessB = parseInt(courseInfoB.newness || 0);
+                    return newnessB - newnessA;
+                } else if (sortFilter === 'popular') {
+                    const popularityA = parseInt(courseInfoA.popularity || 0);
+                    const popularityB = parseInt(courseInfoB.popularity || 0);
+                    return popularityB - popularityA;
+                } else if (sortFilter === 'rating') {
+                    const ratingA = parseFloat(courseInfoA.rating || 0);
+                    const ratingB = parseFloat(courseInfoB.rating || 0);
+                    return ratingB - ratingA;
+                }
+                return 0;
+            });
+
+            courseCards.forEach(card => courseGrid.appendChild(card));
+        }
+
+        // --- Sidebar Functionality ---
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+
+            sidebar.classList.add('-translate-x-full');
+            sidebar.classList.remove('translate-x-0');
+            overlay.classList.add('hidden');
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                sidebar.classList.add('translate-x-0');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                sidebar.classList.remove('translate-x-0');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const menuButton = document.querySelector('[onclick="toggleSidebar()"]');
+
+            const isClickInsideSidebar = sidebar.contains(event.target);
+            const isClickOnMenuButton = menuButton && menuButton.contains(event.target);
+            const isMobile = window.innerWidth < 1024;
+
+            if (!sidebar.classList.contains('-translate-x-full') && !isClickInsideSidebar && !isClickOnMenuButton && isMobile) {
+                closeSidebar();
+            }
+        });
+
+
+        // --- Search Functionality ---
+        document.getElementById('courseSearch').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const searchTerm = this.value.toLowerCase();
+                const currentGridId = activeContent === 'courseList' ? 'courseListGrid' : 'myCoursesGrid';
+                const courseGrid = document.getElementById(currentGridId);
+                const courseCards = courseGrid.querySelectorAll('.course-card');
+                let visibleCount = 0;
+
+                courseCards.forEach(card => {
+                    const title = card.querySelector('h3').textContent.toLowerCase();
+                    const description = card.querySelector('p.text-gray-700').textContent.toLowerCase();
+                    const courseId = card.getAttribute('data-course-id');
+
+                    let matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
+                    let isEnrolledInMyCourses = (activeContent === 'myCourses' && enrolledCourses[courseId] && enrolledCourses[courseId].enrolled);
+                    let shouldDisplay = false;
+
+                    if (activeContent === 'courseList') {
+                        shouldDisplay = matchesSearch;
+                    } else if (activeContent === 'myCourses') {
+                        shouldDisplay = isEnrolledInMyCourses && matchesSearch;
+                    }
+
+                    if (shouldDisplay) {
+                        card.style.display = isGridView ? 'block' : 'flex';
+                        card.classList.add('fade-in');
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                        card.classList.remove('fade-in');
+                    }
+                });
+
+                displayEmptyState(activeContent);
+                sortCourses(activeContent);
+            }
+        });
+
+        // --- Empty State Management ---
+        function displayEmptyState(section) {
+            let emptyStateElement;
+            let gridElement;
+            let cardsSelector;
+
+            if (section === 'courseList') {
+                emptyStateElement = document.getElementById('emptyStateCourseList');
+                gridElement = document.getElementById('courseListGrid');
+                cardsSelector = '.course-card';
+            } else if (section === 'myCourses') {
+                emptyStateElement = document.getElementById('emptyStateMyCourses');
+                gridElement = document.getElementById('myCoursesGrid');
+                cardsSelector = '.course-card';
+            } else if (section === 'progress') {
+                emptyStateElement = document.getElementById('emptyStateProgress');
+                gridElement = document.getElementById('progressGrid');
+                cardsSelector = '.bg-white.rounded-xl.shadow-md.p-6';
+            } else if (section === 'certificates') {
+                emptyStateElement = document.getElementById('emptyStateCertificates');
+                gridElement = document.getElementById('certificatesGrid');
+                cardsSelector = '.certificate-card';
+            } else if (section === 'assignments') {
+                emptyStateElement = document.getElementById('emptyStateAssignments');
+                gridElement = document.getElementById('assignmentsList');
+                cardsSelector = '.bg-white.rounded-xl.shadow-md.p-6'; // Select assignment cards
+            }
+            else {
+                return;
+            }
+
+            const visibleCards = Array.from(gridElement.querySelectorAll(cardsSelector))
+                                   .filter(card => card.style.display !== 'none' && !card.classList.contains('hidden'));
+
+
+            if (visibleCards.length === 0) {
+                emptyStateElement.classList.remove('hidden');
+            } else {
+                emptyStateElement.classList.add('hidden');
+            }
+        }
+
+
+        // --- Update Dashboard ---
+        function updateDashboardActiveCourses() {
+            const activeCoursesList = document.getElementById('activeCoursesDashboard');
+            activeCoursesList.innerHTML = '';
+            let hasActiveCourse = false;
+
+            for (const courseId in enrolledCourses) {
+                if (enrolledCourses[courseId].enrolled && !enrolledCourses[courseId].completed) {
+                    const courseTitle = courseData[courseId] ? courseData[courseId].title : "Kursus Tidak Dikenal";
+                    const listItem = document.createElement('li');
+                    listItem.className = 'flex items-center justify-between py-1';
+                    listItem.innerHTML = `
+                        <span>${courseTitle} (<span class="font-bold">${enrolledCourses[courseId].progress}%</span> selesai)</span>
+                        <button onclick="startCourse('${courseId}')" class="text-blue-500 hover:underline text-sm ml-2">Lanjutkan</button>
+                    `;
+                    activeCoursesList.appendChild(listItem);
+                    hasActiveCourse = true;
+                }
+            }
+
+            if (!hasActiveCourse) {
+                activeCoursesList.innerHTML = '<li>Belum ada kursus aktif. Daftar di "Pilih Mata Kuliah"!</li>';
+            }
+        }
+
+        // --- Assignments Functions ---
+        function updateAssignments() {
+            const assignmentsList = document.getElementById('assignmentsList');
+            // Clear existing assignments except for the empty state
+            Array.from(assignmentsList.children).forEach(child => {
+                if (child.id !== 'emptyStateAssignments') {
+                    child.remove();
+                }
+            });
+            let hasVisibleAssignment = false;
+
+            for (const courseId in enrolledCourses) {
+                if (enrolledCourses[courseId].enrolled && courseData[courseId].assignments) {
+                    courseData[courseId].assignments.forEach(assignment => {
+                        // Check if this specific assignment card exists as a template
+                        const assignmentCardTemplate = document.getElementById(`assignment-card-${assignment.id}`);
+                        if (assignmentCardTemplate) {
+                            const clonedCard = assignmentCardTemplate.cloneNode(true);
+                            clonedCard.id = `assignment-card-${assignment.id}-active`; // Give it a new ID to avoid duplication
+                            clonedCard.classList.remove('hidden');
+
+                            // Update dynamic content
+                            clonedCard.querySelector('h3').textContent = assignment.title;
+                            clonedCard.querySelector('p.text-gray-700.mb-2').textContent = `Kursus: ${courseData[courseId].title}`;
+                            clonedCard.querySelector('p.text-gray-600.text-sm.mb-3 span').textContent = assignment.dueDate.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+                            clonedCard.querySelector('p.text-gray-700.text-sm.mb-4').textContent = assignment.description;
+
+                            // Add to the list
+                            assignmentsList.insertBefore(clonedCard, document.getElementById('emptyStateAssignments'));
+                            hasVisibleAssignment = true;
+                        }
+                    });
+                }
+            }
+
+            if (!hasVisibleAssignment) {
+                document.getElementById('emptyStateAssignments').classList.remove('hidden');
+            } else {
+                document.getElementById('emptyStateAssignments').classList.add('hidden');
+            }
+        }
+
+
+        // --- Calendar Functions ---
+        function generateCalendar(year, month) {
+            const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            document.getElementById('currentMonthYear').textContent = `${monthNames[month]} ${year}`;
+
+            const calendarDays = document.getElementById('calendarDays');
+            calendarDays.innerHTML = '';
+
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const numDays = lastDay.getDate();
+            const startDay = firstDay.getDay(); // 0 for Sunday, 1 for Monday...
+
+            // Add empty days for the start of the month
+            for (let i = 0; i < startDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.classList.add('calendar-day');
+                calendarDays.appendChild(emptyDay);
+            }
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Normalize today for comparison
+
+            // Collect all events for the current month from enrolled courses
+            const monthEvents = [];
+            for (const courseId in enrolledCourses) {
+                if (enrolledCourses[courseId].enrolled && courseData[courseId].events) {
+                    courseData[courseId].events.forEach(event => {
+                        const eventDate = new Date(event.date);
+                        if (eventDate.getFullYear() === year && eventDate.getMonth() === month) {
+                            monthEvents.push({
+                                day: eventDate.getDate(),
+                                title: event.title,
+                                type: event.type,
+                                courseTitle: courseData[courseId].title
+                            });
+                        }
+                    });
+                }
+            }
+            
+            // Render days
+            for (let day = 1; day <= numDays; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.classList.add('calendar-day', 'current-month');
+                dayElement.textContent = day;
+
+                const currentDayDate = new Date(year, month, day);
+                currentDayDate.setHours(0, 0, 0, 0); // Normalize for comparison
+
+                if (currentDayDate.getTime() === today.getTime()) {
+                    dayElement.classList.add('today');
+                }
+
+                const eventsOnThisDay = monthEvents.filter(event => event.day === day);
+                if (eventsOnThisDay.length > 0) {
+                    dayElement.classList.add('has-event');
+                    // Add a small dot to indicate event
+                    const dot = document.createElement('div');
+                    dot.classList.add('event-dot');
+                    dayElement.appendChild(dot);
+                    
+                    // Add tooltip or popover for events if needed (beyond this scope)
+                    // For now, just add a title for hover
+                    dayElement.title = eventsOnThisDay.map(e => `${e.title} (${e.courseTitle})`).join('\n');
+                }
+                
+                dayElement.addEventListener('click', () => showDayEvents(currentDayDate, eventsOnThisDay));
+
+                calendarDays.appendChild(dayElement);
+            }
+
+            // Show events for today when calendar is generated
+            showDayEvents(today, monthEvents.filter(event => event.day === today.getDate()));
+        }
+
+        function showDayEvents(date, events) {
+            const todayEventsList = document.getElementById('todayEvents');
+            todayEventsList.innerHTML = '';
+            
+            // Format the clicked date for display
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            todayEventsList.innerHTML = `<li class="font-semibold text-gray-800 mb-2">Agenda ${date.toLocaleDateString('id-ID', options)}:</li>`;
+
+            if (events.length > 0) {
+                events.forEach(event => {
+                    const listItem = document.createElement('li');
+                    let icon = '';
+                    let color = '';
+                    if (event.type === 'assignment') {
+                        icon = '<i class="fas fa-tasks mr-2 text-red-500"></i>';
+                        color = 'text-red-700';
+                    } else if (event.type === 'exam') {
+                        icon = '<i class="fas fa-file-alt mr-2 text-purple-500"></i>';
+                        color = 'text-purple-700';
+                    } else if (event.type === 'live') {
+                         icon = '<i class="fas fa-video mr-2 text-green-500"></i>';
+                         color = 'text-green-700';
+                    } else if (event.type === 'meeting') {
+                         icon = '<i class="fas fa-calendar-check mr-2 text-blue-500"></i>';
+                         color = 'text-blue-700';
+                    } else {
+                        icon = '<i class="fas fa-info-circle mr-2 text-gray-500"></i>';
+                        color = 'text-gray-700';
+                    }
+                    listItem.className = `flex items-center text-sm ${color}`;
+                    listItem.innerHTML = `${icon} <span>${event.title} (${event.courseTitle})</span>`;
+                    todayEventsList.appendChild(listItem);
+                });
+            } else {
+                const listItem = document.createElement('li');
+                listItem.className = 'text-gray-500';
+                listItem.textContent = 'Tidak ada agenda di tanggal ini.';
+                todayEventsList.appendChild(listItem);
+            }
+        }
+
+
+        // Calendar navigation
+        document.getElementById('prevMonth').addEventListener('click', () => {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+            generateCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth());
+        });
+
+        document.getElementById('nextMonth').addEventListener('click', () => {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+            generateCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth());
+        });
+
+        // --- Forum Functions ---
+        function viewForumTopic(courseId, topicTitle) {
+            alert(`Membuka diskusi:\nKursus: ${courseData[courseId].title}\nTopik: ${topicTitle}\n\n(Ini akan mengarahkan ke halaman detail topik di aplikasi nyata)`);
+            // In a real application, you'd navigate to a specific forum topic page/modal
+            // For now, it's just an alert. You could expand the forumContent div to show topic details.
+        }
+
+
+        // --- Initial Load Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Populate courseData with correct category and level_key for filtering
+            // Also adding `newness` for sorting
+            document.querySelectorAll('.course-card').forEach(card => {
+                const courseId = card.getAttribute('data-course-id');
+                if (courseData[courseId]) { // Ensure courseData exists for this ID
+                    courseData[courseId].category = card.getAttribute('data-category');
+                    courseData[courseId].level_key = card.getAttribute('data-level');
+                    courseData[courseId].rating = parseFloat(card.getAttribute('data-rating'));
+                    courseData[courseId].popularity = parseInt(card.getAttribute('data-popularity'));
+                    courseData[courseId].newness = parseInt(card.getAttribute('data-newness'));
+                }
+            });
+
+            // Initialize the enrollment status and buttons for existing cards on page load (in "Pilih Mata Kuliah" grid)
+            document.querySelectorAll('#courseListGrid .course-card').forEach(card => {
+                const courseId = card.getAttribute('data-course-id');
+                const enrollButton = card.querySelector('button:last-child'); // Target the "Daftar" button
+
+                if (enrolledCourses[courseId] && enrolledCourses[courseId].enrolled) {
+                    if (enrollButton) {
+                        enrollButton.innerHTML = '<i class="fas fa-play-circle mr-1"></i>Mulai Kursus';
+                        enrollButton.onclick = () => startCourse(courseId);
+                        enrollButton.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                        enrollButton.classList.add('bg-green-600', 'hover:bg-green-700');
+                    }
+                }
+            });
+
+            // Initialize display of cards in "Kursus Saya", "Progress", and "Sertifikat" grids based on `enrolledCourses`
+            Object.keys(courseData).forEach(courseId => {
+                const myCourseCard = document.getElementById(`my-course-card-${courseId}`);
+                const progressCard = document.getElementById(`progress-card-${courseId}`);
+                const certificateCard = document.getElementById(`certificate-card-${courseId}`);
+
+                // Update "Kursus Saya" cards: hidden by default, shown by filterCourses when active.
+                // Just ensure their initial state reflects enrollment if they are part of the template.
+                if (myCourseCard) {
+                    myCourseCard.classList.toggle('hidden', !(enrolledCourses[courseId] && enrolledCourses[courseId].enrolled));
+                }
+
+                // Update "Progress" cards: hidden by default, shown by filterCourses when active.
+                if (progressCard) {
+                    progressCard.classList.toggle('hidden', !(enrolledCourses[courseId] && enrolledCourses[courseId].enrolled));
+                    if (enrolledCourses[courseId] && enrolledCourses[courseId].enrolled) {
+                        const progressBar = document.getElementById(`progress-bar-${courseId}`);
+                        const progressText = document.getElementById(`progress-text-${courseId}`);
+                        if (progressBar && progressText) {
+                            const progress = enrolledCourses[courseId].progress;
+                            progressBar.style.width = `${progress}%`;
+                            progressText.textContent = `${progress}% Selesai`;
+                        }
+                    }
+                }
+
+                // Update "Sertifikat" cards: hidden by default, shown by filterCourses when active.
+                if (certificateCard) {
+                    certificateCard.classList.toggle('hidden', !(enrolledCourses[courseId] && enrolledCourses[courseId].completed && courseData[courseId].hasCertificate));
+                }
+            });
+
+            // Set the initial active navigation item and content (e.g., 'Pilih Mata Kuliah')
+            setActiveNav(document.querySelector('.nav-item[onclick*=\'courseList\']'), 'courseList');
+        });
+    </script>
+</body>
+</html>
