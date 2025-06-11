@@ -202,6 +202,188 @@
             font-size: 0.875rem;
             color: #6b7280;
         }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 600px;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+        .modal-overlay.open .modal-content {
+            transform: translateY(0);
+        }
+        .modal-close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+        }
+        .modal-close-btn:hover {
+            color: #1f2937;
+        }
+
+        /* Notifikasi */
+        #notification-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            max-width: 300px;
+        }
+        .notification {
+            background-color: #333;
+            color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            opacity: 0;
+            transform: translateX(100%);
+            animation: slideIn 0.5s forwards, fadeOut 0.5s forwards 4.5s;
+        }
+        .notification.success { background-color: #28a745; }
+        .notification.info { background-color: #17a2b8; }
+        .notification.error { background-color: #dc3545; }
+
+        .notification-icon {
+            margin-right: 0.75rem;
+            font-size: 1.25rem;
+        }
+
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(100%); }
+        }
+
+        /* Material List styles */
+        .module-item {
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+            overflow: hidden;
+        }
+
+        .module-header {
+            padding: 1rem 1.25rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: #1f2937;
+            background-color: #f3f4f6;
+            transition: background-color 0.2s ease;
+        }
+        .module-header:hover {
+            background-color: #e5e7eb;
+        }
+        .module-header .toggle-icon {
+            transition: transform 0.2s ease;
+        }
+        .module-header.open .toggle-icon {
+            transform: rotate(90deg);
+        }
+
+        .module-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .module-content.open {
+            max-height: 500px; /* Adjust as needed */
+            transition: max-height 0.5s ease-in-out;
+        }
+        .material-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 0.75rem 1.25rem;
+            border-top: 1px dashed #e5e7eb;
+            color: #4b5563;
+        }
+        .material-item:hover {
+            background-color: #f0f0f0;
+        }
+        .material-item .icon {
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+            color: #60a5fa;
+        }
+        .material-item .material-info {
+            flex-grow: 1;
+        }
+        .material-item .material-title {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+        .material-item .material-description {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        .material-item .material-action a {
+            text-decoration: underline;
+            color: #2563eb;
+            font-size: 0.875rem;
+            margin-left: 1rem;
+            white-space: nowrap;
+        }
+        .material-item .material-action button {
+            background-color: #dbeafe;
+            color: #2563eb;
+            padding: 0.25rem 0.6rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            margin-left: 0.75rem;
+            transition: background-color 0.2s ease;
+            white-space: nowrap;
+        }
+        .material-item .material-action button:hover {
+            background-color: #bfdbfe;
+        }
+        .material-item .material-action button.completed {
+            background-color: #28a745;
+            color: white;
+            cursor: default;
+        }
+        .material-item .material-action button.completed:hover {
+            background-color: #218838;
+        }
     </style>
 </head>
 <body class="bg-gray-50 flex">
@@ -277,9 +459,7 @@
                         </button>
                         <div class="flex items-center ml-4 lg:hidden">
                             <div class="w-8 h-8 flex items-center justify-center">
-                                <svg width="32" height="32" viewBox="0 0 200 200" class="drop-shadow-sm">
-                                    <img src="logo.png" alt="">
-                                </svg>
+                                <img src="logo.png" alt="">
                             </div>
                             <h1 class="ml-2 text-xl font-bold text-gray-800">VeteranLearn</h1>
                         </div>
@@ -671,7 +851,7 @@
                                 </div>
                             </div>
                             <p class="text-gray-600 text-sm mb-3">Dosen: Maria Sari, MBA</p>
-                            <p class="text-gray-700 text-sm mb-4">Pelajari strategi pemasaran digital modern termasuk SEO, SEM, dan social media marketing.</p>
+                            <p class="text-700 text-sm mb-4">Pelajari strategi pemasaran digital modern termasuk SEO, SEM, dan social media marketing.</p>
                             <div class="flex items-center text-sm text-gray-500 mb-4">
                                 <i class="fas fa-clock mr-1"></i>
                                 <span>12 jam</span>
@@ -875,7 +1055,7 @@
                             <button class="px-4 py-2 border border-green-600 text-green-600 rounded-lg hover:bg-green-50 transition">Kirim Tugas</button>
                         </div>
                     </div>
-                     <div id="emptyStateAssignments" class="hidden text-center py-12">
+                   <div id="emptyStateAssignments" class="hidden text-center py-12">
                         <i class="fas fa-clipboard-check text-6xl text-gray-300 mb-4"></i>
                         <h3 class="text-xl font-semibold text-gray-600 mb-2">Tidak ada tugas yang aktif</h3>
                         <p class="text-gray-500">Tugas akan muncul di sini setelah Anda mendaftar dan memulai kursus.</p>
@@ -946,7 +1126,7 @@
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div class="lg:col-span-2">
                             <h3 class="text-2xl font-semibold text-gray-800 mb-4">Materi Pembelajaran</h3>
-                            <div id="courseMaterials" class="space-y-4">
+                            <div id="courseModules" class="space-y-4">
                                 </div>
                         </div>
                         <div>
@@ -968,13 +1148,7 @@
 
                     <div id="courseOverview" class="mt-8">
                         <h3 class="text-xl font-semibold mb-4">Ringkasan Kursus</h3>
-                        <p>Di bagian ini, Anda akan menemukan informasi umum tentang kursus, termasuk tujuan pembelajaran, prasyarat, dan hasil yang diharapkan.</p>
-                    </div>
-
-                    <div id="courseModules" class="mt-8 hidden">
-                        <h3 class="text-xl font-semibold mb-4">Modul & Materi</h3>
-                        <ul id="moduleList" class="space-y-4">
-                            </ul>
+                        <p id="courseOverviewText">Di bagian ini, Anda akan menemukan informasi umum tentang kursus, termasuk tujuan pembelajaran, prasyarat, dan hasil yang diharapkan.</p>
                     </div>
 
                     <div id="courseQuiz" class="mt-8 hidden">
@@ -988,7 +1162,6 @@
                         <p>Diskusikan materi kursus, ajukan pertanyaan, dan berinteraksi dengan dosen serta sesama mahasiswa.</p>
                         <button onclick="goToForum()" class="mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Buka Forum</button>
                     </div>
-
                 </div>
             </div>
 
@@ -997,12 +1170,31 @@
 
     <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden hidden" onclick="closeSidebar()"></div>
 
-    <script>
-        let isGridView = true;
-        let activeContent = 'courseList';
-        const userName = "John Doe"; // Static user name for certificate generation
-        let currentCalendarDate = new Date(); // For calendar functionality
+    <div id="eventDetailModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeModal('eventDetailModal')">&times;</button>
+            <h3 id="modalEventTitle" class="text-2xl font-bold text-gray-800 mb-3"></h3>
+            <p id="modalEventDate" class="text-gray-600 text-sm mb-2"></p>
+            <p id="modalEventCourse" class="text-gray-600 text-sm mb-4"></p>
+            <p id="modalEventDescription" class="text-gray-700"></p>
+            <div class="mt-4 flex justify-end space-x-2">
+                <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Detail Event</button>
+            </div>
+        </div>
+    </div>
 
+    <div id="notification-container"></div>
+
+    <script>
+        // Global state variables
+        let isGridView = true; // Tracks current view mode for course lists
+        let activeContent = 'courseList'; // Tracks which main content section is active
+        const userName = "John Doe"; // Static user name for certificate generation
+        let currentCalendarDate = new Date(); // Stores the currently displayed month in the calendar
+        currentCalendarDate.setHours(0, 0, 0, 0); // Normalize to start of day
+
+        // --- Course Data Storage (Simulated Backend) ---
+        // Stores detailed information about each course, including modules, assignments, and events.
         const courseData = {
             "ds_dasar": {
                 title: "Data Science Dasar",
@@ -1012,22 +1204,27 @@
                 students: "120 siswa",
                 videos: "15 video",
                 level: "Pemula",
+                category: "data-science", // Added for filtering
+                level_key: "beginner", // Added for filtering
+                rating: 4.8, // Added for sorting
+                popularity: 120, // Added for sorting
+                newness: 1, // Added for sorting (1 for new, 0 for old)
                 hasCertificate: true,
                 modules: [
-                    { title: "Pengantar Data Science", type: "video", url: "https://www.youtube.com/embed/videoseries?list=PLfM8eA1Xg8-fP6q0m4o2W4n4p1b5o3f2D", description: "Materi video pengenalan data science." },
-                    { title: "Statistik Dasar untuk Data Science", type: "document", url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf", description: "Slide dan dokumen PDF tentang konsep statistik dasar." },
-                    { title: "Pengantar Python dan Pandas", type: "video", url: "https://www.youtube.com/embed/videoseries?list=PLfM8eA1Xg8-fP6q0m4o2W4n4p1b5o3f2D", description: "Video tutorial penggunaan Python dan library Pandas." },
-                    { title: "Visualisasi Data dengan Matplotlib", type: "slide", url: "https://docs.google.com/presentation/d/1B_h-A3h4L9_Q9X9X9X9X9X9X9X9X9X9X9X/edit?usp=sharing", description: "Materi slide cara membuat visualisasi data yang menarik." },
-                    { title: "Dasar Machine Learning", type: "video", url: "https://www.youtube.com/embed/videoseries?list=PLfM8eA1Xg8-fP6q0m4o2W4n4p1b5o3f2D", description: "Pengantar konsep dan algoritma machine learning sederhana." }
+                    { id: "ds_mod1", title: "Pengantar Data Science", type: "video", url: "https://www.youtube.com/embed/0", description: "Materi video pengenalan data science." },
+                    { id: "ds_mod2", title: "Statistik Dasar untuk Data Science", type: "document", url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf", description: "Slide dan dokumen PDF tentang konsep statistik dasar." },
+                    { id: "ds_mod3", title: "Pengantar Python dan Pandas", type: "video", url: "https://www.youtube.com/embed/0", description: "Video tutorial penggunaan Python dan library Pandas." },
+                    { id: "ds_mod4", title: "Visualisasi Data dengan Matplotlib", type: "slide", url: "https://docs.google.com/presentation/d/1B_h-A3h4L9_Q9X9X9X9X9X9X9X9X9X9X9X/edit?usp=sharing", description: "Materi slide cara membuat visualisasi data yang menarik." },
+                    { id: "ds_mod5", title: "Dasar Machine Learning", type: "video", url: "https://www.youtube.com/embed/0", description: "Pengantar konsep dan algoritma machine learning sederhana." }
                 ],
-                quizUrl: "https://forms.gle/yourQuizLink", // Example Google Forms link
-                forumLink: "#", // Example forum link (or specific topic ID)
+                quizUrl: "https://forms.gle/yourQuizLinkDS", // Example Google Forms link
+                forumLink: "#forum-ds-dasar", // Example forum link (or specific topic ID)
                 assignments: [
                     { id: 'ds_dasar-modul1', title: 'Tugas Modul 1: Pengantar Data Science', dueDate: new Date('2025-06-15T23:59:59'), description: 'Buat laporan singkat mengenai peran data science dalam industri 4.0.', status: 'Belum Selesai', courseId: 'ds_dasar' }
                 ],
                 events: [
-                    { date: '2025-06-15', title: 'Tenggat Tugas Modul 1 DS', type: 'assignment' },
-                    { date: '2025-06-20', title: 'Live Session Data Prep', type: 'live' }
+                    { date: '2025-06-15', title: 'Tenggat Tugas Modul 1 DS', type: 'assignment', description: 'Batas akhir pengumpulan laporan singkat mengenai peran data science dalam industri 4.0.' },
+                    { date: '2025-06-20', title: 'Live Session Data Prep', type: 'live', description: 'Sesi langsung dengan dosen mengenai persiapan data untuk proyek.' }
                 ]
             },
             "uiux_design": {
@@ -1038,21 +1235,26 @@
                 students: "85 siswa",
                 videos: "12 video",
                 level: "Menengah",
+                category: "design",
+                level_key: "intermediate",
+                rating: 4.9,
+                popularity: 85,
+                newness: 0,
                 hasCertificate: true,
                 modules: [
-                    { title: "Pengantar UI/UX", type: "video", url: "https://www.youtube.com/embed/videoseries?list=PLfM8eA1Xg8-fP6q0m4o2W4n4p1b5o3f2D", description: "Video pengantar tentang perbedaan UI dan UX." },
-                    { title: "Prinsip Desain & Hirarki Visual", type: "slide", url: "https://docs.google.com/presentation/d/1B_h-A3h4L9_Q9X9X9X9X9X9X9X9X9X9X9X/edit?usp=sharing", description: "Slide tentang prinsip-prinsip dasar desain." },
-                    { title: "Wireframing & Prototyping Tools", type: "video", url: "https://www.youtube.com/embed/videoseries?list=PLfM8eA1Xg8-fP6q0m4o2W4n4p1b5o3f2D", description: "Tutorial penggunaan Figma atau Adobe XD." },
-                    { title: "Usability Testing & Feedback", type: "document", url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf", description: "Dokumen panduan melakukan usability testing." }
+                    { id: "uiux_mod1", title: "Pengantar UI/UX", type: "video", url: "https://www.youtube.com/embed/0", description: "Video pengantar tentang perbedaan UI dan UX." },
+                    { id: "uiux_mod2", title: "Prinsip Desain & Hirarki Visual", type: "slide", url: "https://docs.google.com/presentation/d/1B_h-A3h4L9_Q9X9X9X9X9X9X9X9X9X9X9X/edit?usp=sharing", description: "Slide tentang prinsip-prinsip dasar desain." },
+                    { id: "uiux_mod3", title: "Wireframing & Prototyping Tools", type: "video", url: "https://www.youtube.com/embed/0", description: "Tutorial penggunaan Figma atau Adobe XD." },
+                    { id: "uiux_mod4", title: "Usability Testing & Feedback", type: "document", url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf", description: "Dokumen panduan melakukan usability testing." }
                 ],
-                quizUrl: "https://forms.gle/yourQuizLink",
-                forumLink: "#",
-                 assignments: [
+                quizUrl: "https://forms.gle/yourQuizLinkUIUX",
+                forumLink: "#forum-uiux-design",
+                assignments: [
                     { id: 'uiux_design-final', title: 'Tugas Akhir: Prototyping Aplikasi', dueDate: new Date('2025-06-30T23:59:59'), description: 'Buat prototipe interaktif untuk aplikasi mobile pilihan Anda menggunakan Figma/Adobe XD.', status: 'Belum Selesai', courseId: 'uiux_design' }
                 ],
                 events: [
-                    { date: '2025-06-30', title: 'Tenggat Tugas Akhir UI/UX', type: 'assignment' },
-                    { date: '2025-07-05', title: 'Sesi Review UI/UX', type: 'meeting' }
+                    { date: '2025-06-30', title: 'Tenggat Tugas Akhir UI/UX', type: 'assignment', description: 'Batas akhir pengumpulan prototipe aplikasi interaktif.' },
+                    { date: '2025-07-05', title: 'Sesi Review UI/UX', type: 'meeting', description: 'Sesi ulasan desain dan prototipe dengan dosen.' }
                 ]
             },
             "web_dev": {
@@ -1063,21 +1265,26 @@
                 students: "200 siswa",
                 videos: "25 video",
                 level: "Menengah",
+                category: "programming",
+                level_key: "intermediate",
+                rating: 4.7,
+                popularity: 200,
+                newness: 0,
                 hasCertificate: true,
                 modules: [
-                    { title: "HTML & CSS Dasar", type: "video", url: "https://www.youtube.com/embed/videoseries?list=PLfM8eA1Xg8-fP6q0m4o2W4n4p1b5o3f2D", description: "Video pengenalan HTML dan CSS untuk struktur dan styling web." },
-                    { title: "JavaScript Fundamental", type: "video", url: "https://www.youtube.com/embed/videoseries?list=PLfM8eA1Xg8-fP6q0m4o2W4n4p1b5o3f2D", description: "Materi video tentang dasar-dasar pemrograman JavaScript." },
-                    { title: "Pengantar React.js", type: "slide", url: "https://docs.google.com/presentation/d/1B_h-A3h4L9_Q9X9X9X9X9X9X9X9X9X9X9X/edit?usp=sharing", description: "Slide pengenalan framework JavaScript populer, React.js." },
-                    { title: "Membangun API dengan Node.js", type: "document", url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf", description: "Dokumen panduan membangun RESTful API." }
+                    { id: "web_mod1", title: "HTML & CSS Dasar", type: "video", url: "https://www.youtube.com/embed/0", description: "Video pengenalan HTML dan CSS untuk struktur dan styling web." },
+                    { id: "web_mod2", title: "JavaScript Fundamental", type: "video", url: "https://www.youtube.com/embed/0", description: "Materi video tentang dasar-dasar pemrograman JavaScript." },
+                    { id: "web_mod3", title: "Pengantar React.js", type: "slide", url: "https://docs.google.com/presentation/d/1B_h-A3h4L9_Q9X9X9X9X9X9X9X9X9X9X9X/edit?usp=sharing", description: "Slide pengenalan framework JavaScript populer, React.js." },
+                    { id: "web_mod4", title: "Membangun API dengan Node.js", type: "document", url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf", description: "Dokumen panduan membangun RESTful API." }
                 ],
-                quizUrl: "https://forms.gle/yourQuizLink",
-                forumLink: "#",
+                quizUrl: "https://forms.gle/yourQuizLinkWebDev",
+                forumLink: "#forum-web-dev",
                 assignments: [
                     { id: 'web_dev-api', title: 'Tugas Proyek: Backend API', dueDate: new Date('2025-07-10T23:59:59'), description: 'Buatlah RESTful API sederhana menggunakan Node.js dan Express.js.', status: 'Belum Selesai', courseId: 'web_dev' }
                 ],
                 events: [
-                    { date: '2025-07-10', title: 'Tenggat Tugas API WebDev', type: 'assignment' },
-                    { date: '2025-07-15', title: 'Ujian Akhir WebDev', type: 'exam' }
+                    { date: '2025-07-10', title: 'Tenggat Tugas API WebDev', type: 'assignment', description: 'Batas akhir pengiriman proyek Backend API.' },
+                    { date: '2025-07-15', title: 'Ujian Akhir WebDev', type: 'exam', description: 'Ujian komprehensif untuk kursus Web Development.' }
                 ]
             },
             "digital_marketing": {
@@ -1088,37 +1295,95 @@
                 students: "95 siswa",
                 videos: "18 video",
                 level: "Pemula",
+                category: "business",
+                level_key: "beginner",
+                rating: 4.6,
+                popularity: 95,
+                newness: 0,
                 hasCertificate: true,
                 modules: [
-                    { title: "Dasar-dasar Pemasaran Digital", type: "video", url: "https://www.youtube.com/embed/videoseries?list=PLfM8eA1Xg8-fP6q0m4o2W4n4p1b5o3f2D", description: "Video pengantar tentang ekosistem pemasaran digital." },
-                    { title: "Strategi SEO On-Page & Off-Page", type: "document", url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf", description: "Panduan optimasi mesin pencari." },
-                    { title: "Pemasaran Media Sosial Efektif", type: "slide", url: "https://docs.google.com/presentation/d/1B_h-A3h4L9_Q9X9X9X9X9X9X9X9X9X9X9X/edit?usp=sharing", description: "Materi slide tentang cara membangun strategi media sosial." },
-                    { title: "Analisis Data Pemasaran", type: "video", url: "https://www.youtube.com/embed/videoseries?list=PLfM8eA1Xg8-fP6q0m4o2W4n4p1b5o3f2D", description: "Video tentang penggunaan Google Analytics dan tools lainnya." }
+                    { id: "dm_mod1", title: "Dasar-dasar Pemasaran Digital", type: "video", url: "https://www.youtube.com/embed/0", description: "Video pengantar tentang ekosistem pemasaran digital." },
+                    { id: "dm_mod2", title: "Strategi SEO On-Page & Off-Page", type: "document", url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf", description: "Panduan optimasi mesin pencari." },
+                    { id: "dm_mod3", title: "Pemasaran Media Sosial Efektif", type: "slide", url: "https://docs.google.com/presentation/d/1B_h-A3h4L9_Q9X9X9X9X9X9X9X9X9X9X9X/edit?usp=sharing", description: "Materi slide tentang cara membangun strategi media sosial." },
+                    { id: "dm_mod4", title: "Analisis Data Pemasaran", type: "video", url: "https://www.youtube.com/embed/0", description: "Video tentang penggunaan Google Analytics dan tools lainnya." }
                 ],
-                quizUrl: "https://forms.gle/yourQuizLink",
-                forumLink: "#",
+                quizUrl: "https://forms.gle/yourQuizLinkDigitalMarketing",
+                forumLink: "#forum-digital-marketing",
                 assignments: [
                     { id: 'digital_marketing-seo', title: 'Analisis Keyword SEO', dueDate: new Date('2025-07-20T23:59:59'), description: 'Lakukan riset keyword untuk niche tertentu dan buat strategi SEO singkat.', status: 'Belum Selesai', courseId: 'digital_marketing' }
                 ],
                 events: [
-                    { date: '2025-07-20', title: 'Tenggat Analisis SEO', type: 'assignment' }
+                    { date: '2025-07-20', title: 'Tenggat Analisis SEO', type: 'assignment', description: 'Batas akhir pengumpulan riset keyword dan strategi SEO.' }
                 ]
             }
         };
 
-        // Initialize enrolled courses from localStorage or set up default for demonstration
+        // --- User Enrollment and Progress Data (Simulated Local Storage) ---
+        // `enrolledCourses` stores user-specific data for enrolled courses.
+        // It includes:
+        // - `enrolled`: boolean, true if the user is enrolled.
+        // - `completed`: boolean, true if the course is 100% complete.
+        // - `progress`: number (0-100), overall progress for the course.
+        // - `moduleProgress`: object, tracks completed modules. Example: { "ds_mod1": true, "ds_mod2": false }
         let enrolledCourses = JSON.parse(localStorage.getItem('enrolledCourses')) || {};
+
+        // Initialize some dummy enrolled courses for demonstration if none are stored.
+        // This ensures the "My Courses" and "Progress" sections have content on first load.
         if (Object.keys(enrolledCourses).length === 0) {
-            // Set some dummy enrolled courses for demonstration if none are stored
             enrolledCourses = {
-                "uiux_design": { enrolled: true, completed: false, progress: 30 },
-                "digital_marketing": { enrolled: true, completed: true, progress: 100 } // Example of a completed course
+                "uiux_design": { enrolled: true, completed: false, progress: 30, moduleProgress: { "uiux_mod1": true, "uiux_mod2": false } },
+                "digital_marketing": { enrolled: true, completed: true, progress: 100, moduleProgress: { "dm_mod1": true, "dm_mod2": true, "dm_mod3": true, "dm_mod4": true } }
             };
             localStorage.setItem('enrolledCourses', JSON.stringify(enrolledCourses));
         }
 
-        // --- Core Functions ---
+        // --- Core UI Management Functions ---
 
+        /**
+         * Toggles between grid and list view for course cards.
+         */
+        function toggleView() {
+            isGridView = !isGridView;
+            const courseListGrid = document.getElementById('courseListGrid');
+            const myCoursesGrid = document.getElementById('myCoursesGrid');
+            const viewIcon = document.getElementById('viewIcon');
+            const myCoursesViewIcon = document.getElementById('myCoursesViewIcon');
+
+            if (isGridView) {
+                courseListGrid.classList.remove('course-list-view');
+                myCoursesGrid.classList.remove('course-list-view');
+                courseListGrid.classList.add('grid-cols-1', 'md:grid-cols-2', 'lg:grid-cols-3');
+                myCoursesGrid.classList.add('grid-cols-1', 'md:grid-cols-2', 'lg:grid-cols-3');
+                if (viewIcon) {
+                    viewIcon.classList.remove('fa-list');
+                    viewIcon.classList.add('fa-th-large');
+                }
+                if (myCoursesViewIcon) {
+                    myCoursesViewIcon.classList.remove('fa-list');
+                    myCoursesViewIcon.classList.add('fa-th-large');
+                }
+            } else {
+                courseListGrid.classList.add('course-list-view');
+                myCoursesGrid.classList.add('course-list-view');
+                courseListGrid.classList.remove('grid-cols-1', 'md:grid-cols-2', 'lg:grid-cols-3');
+                myCoursesGrid.classList.remove('grid-cols-1', 'md:grid-cols-2', 'lg:grid-cols-3');
+                if (viewIcon) {
+                    viewIcon.classList.remove('fa-th-large');
+                    viewIcon.classList.add('fa-list');
+                }
+                if (myCoursesViewIcon) {
+                    myCoursesViewIcon.classList.remove('fa-th-large');
+                    myCoursesViewIcon.classList.add('fa-list');
+                }
+            }
+            // Re-apply filters to ensure correct display mode is enforced
+            filterCourses(activeContent);
+        }
+
+        /**
+         * Updates the view icon based on the current view mode (`isGridView`).
+         * Called when switching sections.
+         */
         function updateViewIcon() {
             const currentViewIcon = document.getElementById(activeContent === 'courseList' ? 'viewIcon' : 'myCoursesViewIcon');
             if (currentViewIcon) {
@@ -1132,26 +1397,38 @@
             }
         }
 
+        /**
+         * Displays a preview alert for a course.
+         * @param {string} courseId - The ID of the course to preview.
+         */
         function previewCourse(courseId) {
             const course = courseData[courseId];
             if (course) {
-                alert(`Preview kursus: ${course.title}\n\n${course.description}`);
+                showNotification('info', `Preview: ${course.title}`, `${course.description.substring(0, 100)}...`);
+                // In a real app, this would open a dedicated modal or page with full course details.
             }
         }
 
+        /**
+         * Handles course enrollment.
+         * Updates `enrolledCourses` in localStorage and refreshes relevant UI sections.
+         * @param {HTMLElement} buttonElement - The button element that triggered the enrollment.
+         * @param {string} courseId - The ID of the course to enroll in.
+         */
         function enrollCourse(buttonElement, courseId) {
             const courseTitle = courseData[courseId].title;
             const courseCardInCourseList = buttonElement.closest('.course-card');
 
             if (enrolledCourses[courseId] && enrolledCourses[courseId].enrolled) {
-                alert(`Anda sudah terdaftar di kursus: ${courseTitle}. Memulai kursus!`);
-                startCourse(courseId);
+                showNotification('info', `Sudah Terdaftar`, `Anda sudah terdaftar di kursus: ${courseTitle}.`);
+                startCourse(courseId); // Go to course detail if already enrolled
             } else {
                 if (confirm(`Apakah Anda yakin ingin mendaftar kursus ${courseTitle}?`)) {
-                    enrolledCourses[courseId] = { enrolled: true, completed: false, progress: 0 };
+                    enrolledCourses[courseId] = { enrolled: true, completed: false, progress: 0, moduleProgress: {} };
                     localStorage.setItem('enrolledCourses', JSON.stringify(enrolledCourses));
-                    alert(`Berhasil mendaftar kursus: ${courseTitle}`);
+                    showNotification('success', `Berhasil Mendaftar!`, `Anda telah berhasil mendaftar kursus: ${courseTitle}`);
 
+                    // Update the "Daftar" button to "Mulai Kursus" in "Pilih Mata Kuliah" section
                     if (courseCardInCourseList) {
                         const enrollButton = courseCardInCourseList.querySelector('button:last-child');
                         if (enrollButton) {
@@ -1162,73 +1439,180 @@
                         }
                     }
 
-                    // Re-render relevant sections
+                    // Refresh all sections that display enrolled course data
                     filterCourses('myCourses');
                     filterCourses('progress');
                     updateDashboardActiveCourses();
-                    updateAssignments(); // Refresh assignments as new course might have new tasks
-                    generateCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth()); // Refresh calendar
+                    updateAssignments();
+                    generateCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth());
                 }
             }
         }
 
+        /**
+         * Navigates to the course detail page for an enrolled course.
+         * @param {string} courseId - The ID of the course to start.
+         */
         function startCourse(courseId) {
-            setActiveNav(null, 'courseDetail');
-            loadCourseDetail(courseId);
+            setActiveNav(null, 'courseDetail'); // Switch to course detail section
+            loadCourseDetail(courseId); // Load the specific course data
         }
 
+        /**
+         * Populates the course detail section with data for the given courseId.
+         * @param {string} courseId - The ID of the course to display details for.
+         */
         function loadCourseDetail(courseId) {
             const course = courseData[courseId];
             if (!course) {
-                alert("Course not found!");
+                showNotification('error', 'Kesalahan', 'Detail kursus tidak ditemukan!');
                 return;
             }
 
+            // Update main course information
             document.getElementById('courseDetailTitle').textContent = course.title;
             document.getElementById('courseDetailInstructor').textContent = `Dosen: ${course.instructor}`;
             document.getElementById('courseDetailDescription').textContent = course.description;
+            document.getElementById('courseOverviewText').textContent = course.description; // For overview tab
 
-            const courseMaterials = document.getElementById('courseMaterials');
-            courseMaterials.innerHTML = '';
+            const courseModulesDiv = document.getElementById('courseModules');
+            courseModulesDiv.innerHTML = ''; // Clear previous modules
 
-            const moduleList = document.getElementById('moduleList');
-            moduleList.innerHTML = '';
-
-            course.modules.forEach((module, index) => {
+            // Populate modules and materials
+            course.modules.forEach((module, moduleIndex) => {
+                const isModuleCompleted = enrolledCourses[courseId]?.moduleProgress?.[module.id] || false;
                 const materialIcon = module.type === 'video' ? 'fa-video' : (module.type === 'slide' ? 'fa-file-powerpoint' : 'fa-file-alt');
-                const moduleItemHTML = `
-                    <li class="bg-gray-100 p-4 rounded-lg flex items-center shadow-sm">
-                        <i class="fas ${materialIcon} text-blue-600 mr-3 text-lg"></i>
-                        <div>
-                            <p class="font-semibold text-gray-800">${module.title}</p>
-                            <p class="text-sm text-gray-600">${module.description}</p>
-                            <a href="${module.url}" target="_blank" class="text-blue-500 hover:underline text-sm mt-1 inline-block">Buka Materi</a>
+                
+                const moduleHtml = `
+                    <div class="module-item">
+                        <div class="module-header" onclick="toggleModule('${module.id}')">
+                            <span>Modul ${moduleIndex + 1}: ${module.title}</span>
+                            <i class="fas fa-chevron-right toggle-icon"></i>
                         </div>
-                    </li>
+                        <div id="module-content-${module.id}" class="module-content">
+                            <div class="material-item">
+                                <span class="icon"><i class="fas ${materialIcon}"></i></span>
+                                <div class="material-info">
+                                    <p class="material-title">${module.title}</p>
+                                    <p class="material-description">${module.description}</p>
+                                </div>
+                                <div class="material-action">
+                                    <a href="${module.url}" target="_blank">Buka Materi</a>
+                                    <button onclick="markModuleCompleted('${courseId}', '${module.id}', this)"
+                                            class="${isModuleCompleted ? 'completed' : ''}"
+                                            ${isModuleCompleted ? 'disabled' : ''}>
+                                        ${isModuleCompleted ? '<i class="fas fa-check"></i> Selesai' : 'Tandai Selesai'}
+                                    </button>
+                                </div>
+                            </div>
+                            </div>
+                    </div>
                 `;
-                moduleList.insertAdjacentHTML('beforeend', moduleItemHTML);
+                courseModulesDiv.insertAdjacentHTML('beforeend', moduleHtml);
             });
 
+            // Update course progress bar and text
             const courseProgress = enrolledCourses[courseId] ? enrolledCourses[courseId].progress : 0;
             document.getElementById('courseDetailProgressBar').style.width = `${courseProgress}%`;
             document.getElementById('courseDetailProgressText').textContent = `${courseProgress}% Selesai`;
 
-            localStorage.setItem('currentCourseDetailId', courseId);
-            showCourseSection('overview');
+            localStorage.setItem('currentCourseDetailId', courseId); // Store active course for other sub-functions
+            showCourseSection('overview'); // Default to overview section
         }
 
+        /**
+         * Toggles the visibility of a module's content in the course detail page.
+         * @param {string} moduleId - The ID of the module to toggle.
+         */
+        function toggleModule(moduleId) {
+            const moduleContent = document.getElementById(`module-content-${moduleId}`);
+            const moduleHeader = moduleContent.previousElementSibling; // The header is the previous sibling
+            if (moduleContent && moduleHeader) {
+                moduleContent.classList.toggle('open');
+                moduleHeader.classList.toggle('open'); // Add class to rotate icon
+                // Adjust max-height for smooth transition
+                if (moduleContent.classList.contains('open')) {
+                    moduleContent.style.maxHeight = moduleContent.scrollHeight + "px";
+                } else {
+                    moduleContent.style.maxHeight = null;
+                }
+            }
+        }
+
+        /**
+         * Marks a specific module as completed and updates overall course progress.
+         * @param {string} courseId - The ID of the course.
+         * @param {string} moduleId - The ID of the module to mark as complete.
+         * @param {HTMLElement} button - The button element that was clicked.
+         */
+        function markModuleCompleted(courseId, moduleId, button) {
+            if (!enrolledCourses[courseId]) return;
+
+            enrolledCourses[courseId].moduleProgress = enrolledCourses[courseId].moduleProgress || {};
+            enrolledCourses[courseId].moduleProgress[moduleId] = true;
+
+            // Calculate new overall progress
+            const courseModules = courseData[courseId].modules;
+            const completedModulesCount = Object.values(enrolledCourses[courseId].moduleProgress).filter(status => status === true).length;
+            const totalModulesCount = courseModules.length;
+
+            const newProgress = totalModulesCount > 0 ? Math.floor((completedModulesCount / totalModulesCount) * 100) : 0;
+            enrolledCourses[courseId].progress = newProgress;
+
+            if (newProgress === 100) {
+                enrolledCourses[courseId].completed = true;
+                showNotification('success', 'Kursus Selesai!', `Selamat, Anda telah menyelesaikan kursus ${courseData[courseId].title}!`);
+                if (courseData[courseId].hasCertificate) {
+                    const certificateCard = document.getElementById(`certificate-card-${courseId}`);
+                    if (certificateCard) {
+                        certificateCard.classList.remove('hidden');
+                    }
+                }
+            }
+
+            localStorage.setItem('enrolledCourses', JSON.stringify(enrolledCourses));
+            showNotification('success', 'Materi Selesai!', `Anda telah menyelesaikan modul: ${courseData[courseId].modules.find(m => m.id === moduleId)?.title || ''}`);
+
+            // Update UI for the marked module
+            if (button) {
+                button.classList.add('completed');
+                button.textContent = 'Selesai';
+                button.disabled = true;
+            }
+
+            // Update overall progress bar in course detail and progress section
+            document.getElementById('courseDetailProgressBar').style.width = `${newProgress}%`;
+            document.getElementById('courseDetailProgressText').textContent = `${newProgress}% Selesai`;
+            
+            // Re-render progress section to reflect changes
+            filterCourses('progress');
+            displayEmptyState('progress');
+            displayEmptyState('certificates');
+            updateDashboardActiveCourses();
+        }
+
+
+        /**
+         * Returns to the "My Courses" section.
+         */
         function goBackToMyCourses() {
             const myCoursesNavItem = document.querySelector('.nav-item[onclick*=\'myCourses\']');
             setActiveNav(myCoursesNavItem, 'myCourses');
-            localStorage.removeItem('currentCourseDetailId');
+            localStorage.removeItem('currentCourseDetailId'); // Clear the active course ID
         }
 
+        /**
+         * Shows a specific sub-section within the course detail page (Overview, Modules, Quiz, Discussion).
+         * @param {string} section - The ID of the sub-section to show ('overview', 'modules', 'quiz', 'discussion').
+         */
         function showCourseSection(section) {
+            // Hide all sub-sections first
             document.getElementById('courseOverview').classList.add('hidden');
             document.getElementById('courseModules').classList.add('hidden');
             document.getElementById('courseQuiz').classList.add('hidden');
             document.getElementById('courseDiscussion').classList.add('hidden');
 
+            // Show the selected sub-section
             if (section === 'overview') {
                 document.getElementById('courseOverview').classList.remove('hidden');
             } else if (section === 'modules') {
@@ -1240,28 +1624,43 @@
             }
         }
 
+        /**
+         * Simulates starting a quiz.
+         */
         function startQuiz() {
             const courseId = localStorage.getItem('currentCourseDetailId');
             if (courseId && courseData[courseId].quizUrl) {
                 if (confirm(`Anda akan dialihkan ke halaman kuis untuk kursus ${courseData[courseId].title}. Lanjutkan?`)) {
                     window.open(courseData[courseId].quizUrl, '_blank');
+                    showNotification('info', 'Membuka Kuis', `Anda dialihkan ke halaman kuis untuk ${courseData[courseId].title}.`);
                 }
             } else {
-                alert("Kuis tidak tersedia untuk kursus ini.");
+                showNotification('error', 'Kuis Tidak Tersedia', 'Kuis tidak tersedia untuk kursus ini.');
             }
         }
 
+        /**
+         * Simulates navigating to the course-specific forum.
+         */
         function goToForum() {
             const courseId = localStorage.getItem('currentCourseDetailId');
             if (courseId && courseData[courseId].forumLink) {
-                 if (confirm(`Anda akan dialihkan ke forum diskusi untuk kursus ${courseData[courseId].title}. Lanjutkan?`)) {
+                if (confirm(`Anda akan dialihkan ke forum diskusi untuk kursus ${courseData[courseId].title}. Lanjutkan?`)) {
+                    // In a real application, this would navigate to a specific forum page/modal
+                    // For this demo, we'll just switch to the main forum section.
                     setActiveNav(document.querySelector('.nav-item[onclick*=\'forum\']'), 'forum');
-                 }
+                    showNotification('info', 'Membuka Forum', `Anda dialihkan ke forum diskusi untuk ${courseData[courseId].title}.`);
+                }
             } else {
-                alert("Forum tidak tersedia untuk kursus ini.");
+                showNotification('error', 'Forum Tidak Tersedia', 'Forum tidak tersedia untuk kursus ini.');
             }
         }
 
+        /**
+         * Simulates progress for a course (e.g., after completing a module).
+         * Increments progress by 20% until 100% is reached.
+         * @param {string} courseId - The ID of the course to update progress for.
+         */
         function simulateProgress(courseId) {
             let currentProgress = enrolledCourses[courseId] ? enrolledCourses[courseId].progress : 0;
             currentProgress += 20;
@@ -1271,10 +1670,12 @@
                 enrolledCourses[courseId].progress = currentProgress;
                 if (currentProgress === 100) {
                     enrolledCourses[courseId].completed = true;
+                    showNotification('success', 'Kursus Selesai!', `Selamat! Anda telah menyelesaikan kursus ${courseData[courseId].title}!`);
                 }
                 localStorage.setItem('enrolledCourses', JSON.stringify(enrolledCourses));
             }
 
+            // Update UI for the progress card
             const progressBar = document.getElementById(`progress-bar-${courseId}`);
             const progressText = document.getElementById(`progress-text-${courseId}`);
             if (progressBar && progressText) {
@@ -1282,13 +1683,11 @@
                 progressText.textContent = `${currentProgress}% Selesai`;
             }
 
-            if (currentProgress === 100) {
-                alert(`Selamat! Anda telah menyelesaikan kursus ${courseData[courseId].title}!`);
-                if (courseData[courseId].hasCertificate) {
-                    const certificateCard = document.getElementById(`certificate-card-${courseId}`);
-                    if (certificateCard) {
-                        certificateCard.classList.remove('hidden');
-                    }
+            // Show certificate if applicable and completed
+            if (currentProgress === 100 && courseData[courseId].hasCertificate) {
+                const certificateCard = document.getElementById(`certificate-card-${courseId}`);
+                if (certificateCard) {
+                    certificateCard.classList.remove('hidden');
                 }
             }
             displayEmptyState('progress');
@@ -1296,33 +1695,51 @@
             updateDashboardActiveCourses();
         }
 
+        /**
+         * Simulates downloading a certificate.
+         * @param {string} courseTitle - The title of the course for the certificate.
+         */
         function downloadCertificate(courseTitle) {
-            alert(`Sertifikat untuk kursus "${courseTitle}" sedang diunduh! (Simulasi)`);
+            showNotification('info', 'Unduhan Sertifikat', `Sertifikat untuk kursus "${courseTitle}" sedang diunduh! (Simulasi)`);
+            // In a real application, you'd generate a PDF/image here.
         }
 
+        /**
+         * Sets the active navigation item and displays the corresponding content section.
+         * Manages `activeContent` state.
+         * @param {HTMLElement | null} element - The navigation item element clicked, or null if triggered programmatically.
+         * @param {string} sectionId - The ID of the content section to activate (e.g., 'dashboard', 'courseList').
+         */
         function setActiveNav(element, sectionId) {
+            // Remove 'active' class from all nav items
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
             });
 
+            // Add 'active' class to the clicked/specified nav item
             if (element) {
                 element.classList.add('active');
             } else {
+                // If triggered programmatically (e.g., from startCourse), find the corresponding nav item
                 const navItem = document.querySelector(`.nav-item[onclick*=\\'${sectionId}\\']`);
                 if (navItem) navItem.classList.add('active');
             }
 
+            // Hide all content sections
             document.querySelectorAll('.content-section').forEach(section => {
                 section.classList.add('hidden');
             });
 
+            // Show the target content section
             const targetSection = document.getElementById(sectionId + 'Content');
             if (targetSection) {
                 targetSection.classList.remove('hidden');
             }
 
+            // Update the active content tracker
             activeContent = sectionId;
 
+            // Perform specific updates based on the active section
             if (activeContent === 'courseList' || activeContent === 'myCourses') {
                 filterCourses(activeContent);
                 sortCourses(activeContent);
@@ -1341,12 +1758,19 @@
                 displayEmptyState(activeContent);
             } else if (activeContent === 'calendar') {
                 generateCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth()); // Generate current month's calendar
+            } else if (activeContent === 'courseDetail') {
+                // Course detail content is loaded by loadCourseDetail()
             }
 
+            // Close sidebar on mobile
             closeSidebar();
         }
 
-
+        /**
+         * Filters course cards based on selected category and level.
+         * Hides/shows cards and manages empty state messages.
+         * @param {string} section - The ID of the section being filtered ('courseList', 'myCourses', 'progress', 'certificates').
+         */
         function filterCourses(section) {
             const categoryFilterId = section === 'courseList' ? 'categoryFilter' : `myCoursesCategoryFilter`;
             const levelFilterId = section === 'courseList' ? 'levelFilter' : `myCoursesLevelFilter`;
@@ -1356,7 +1780,7 @@
             const levelFilter = document.getElementById(levelFilterId) ? document.getElementById(levelFilterId).value : '';
 
             const courseGrid = document.getElementById(gridId);
-            // Select all potential cards in the grid (myCoursesGrid or progressGrid or certificatesGrid)
+            // Select all potential cards in the grid relevant to the section
             const allCards = courseGrid.querySelectorAll('.course-card, .bg-white.rounded-xl.shadow-md.p-6, .certificate-card');
 
             allCards.forEach(card => {
@@ -1381,16 +1805,17 @@
                     const enrolledStatus = enrolledCourses[courseId] && enrolledCourses[courseId].enrolled;
                     // For myCourses, show only enrolled courses that match filters
                     shouldDisplay = enrolledStatus && categoryMatch && levelMatch;
-                    // Also ensure the correct ID is being targeted.
-                    if (card.id !== `my-course-card-${courseId}`) { // If this is a card from original courseListGrid
-                         shouldDisplay = false; // Don't show it here.
+                    // Ensure only the specific "my-course-card" elements are targeted in this section
+                    if (card.id !== `my-course-card-${courseId}`) {
+                        shouldDisplay = false;
                     }
                 } else if (section === 'progress') {
                     const enrolledStatus = enrolledCourses[courseId] && enrolledCourses[courseId].enrolled;
-                    // For progress, show only enrolled courses (filters don't apply to progress cards directly)
+                    // For progress, show only enrolled courses (filters don't apply to progress cards directly for category/level)
+                    // We simply check enrollment status. Category/Level filters on progress would need a separate UI for them.
                     shouldDisplay = enrolledStatus;
-                     if (card.id !== `progress-card-${courseId}`) {
-                         shouldDisplay = false;
+                    if (card.id !== `progress-card-${courseId}`) {
+                        shouldDisplay = false;
                     }
                 } else if (section === 'certificates') {
                     const completedStatus = enrolledCourses[courseId] && enrolledCourses[courseId].completed;
@@ -1398,7 +1823,7 @@
                     // For certificates, show only completed courses with a certificate
                     shouldDisplay = completedStatus && hasCertificate;
                     if (card.id !== `certificate-card-${courseId}`) {
-                         shouldDisplay = false;
+                        shouldDisplay = false;
                     }
                 }
 
@@ -1406,8 +1831,10 @@
                     // Apply appropriate display style based on the section and view mode
                     if ((section === 'courseList' || section === 'myCourses') && !isGridView) {
                         card.style.display = 'flex'; // List view
+                        card.classList.add('course-list-view'); // Add specific class for list view styling
                     } else {
-                        card.style.display = 'block'; // Grid view or for progress/certificate cards
+                        card.style.display = 'block'; // Grid view
+                        card.classList.remove('course-list-view'); // Remove list view class
                     }
                     card.classList.add('fade-in');
                 } else {
@@ -1416,12 +1843,18 @@
                 }
             });
 
-            displayEmptyState(section);
+            displayEmptyState(section); // Update empty state after filtering
         }
 
+        /**
+         * Sorts course cards within a grid based on the selected sort criteria.
+         * @param {string} section - The ID of the section being sorted ('courseList', 'myCourses').
+         */
         function sortCourses(section) {
             const sortFilterId = section === 'courseList' ? 'sortFilter' : `myCoursesSortFilter`;
-            const gridId = section === 'courseList' ? 'courseListGrid' : (section === 'myCourses' ? 'myCoursesGrid' : (section === 'progress' ? 'progressGrid' : 'certificatesGrid'));
+            const gridId = section === 'courseList' ? 'courseListGrid' : (section === 'myCourses' ? 'myCoursesGrid' : ''); // Only for courseList and myCourses
+
+            if (!gridId) return; // Only sort applicable grids
 
             const sortFilterElement = document.getElementById(sortFilterId);
             const sortFilter = sortFilterElement ? sortFilterElement.value : 'newest';
@@ -1438,14 +1871,17 @@
                 const courseInfoB = courseData[courseIdB] || {};
 
                 if (sortFilter === 'newest') {
+                    // Higher `newness` value means newer.
                     const newnessA = parseInt(courseInfoA.newness || 0);
                     const newnessB = parseInt(courseInfoB.newness || 0);
                     return newnessB - newnessA;
                 } else if (sortFilter === 'popular') {
-                    const popularityA = parseInt(courseInfoA.popularity || 0);
-                    const popularityB = parseInt(courseInfoB.popularity || 0);
+                    // Higher `popularity` (students) means more popular.
+                    const popularityA = parseInt(courseInfoA.students?.replace(' siswa', '') || 0);
+                    const popularityB = parseInt(courseInfoB.students?.replace(' siswa', '') || 0);
                     return popularityB - popularityA;
                 } else if (sortFilter === 'rating') {
+                    // Higher `rating` means higher rated.
                     const ratingA = parseFloat(courseInfoA.rating || 0);
                     const ratingB = parseFloat(courseInfoB.rating || 0);
                     return ratingB - ratingA;
@@ -1453,10 +1889,15 @@
                 return 0;
             });
 
+            // Re-append sorted cards to the grid
             courseCards.forEach(card => courseGrid.appendChild(card));
         }
 
         // --- Sidebar Functionality ---
+
+        /**
+         * Closes the sidebar on mobile views.
+         */
         function closeSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebar-overlay');
@@ -1466,6 +1907,9 @@
             overlay.classList.add('hidden');
         }
 
+        /**
+         * Toggles the visibility of the sidebar on mobile views.
+         */
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebar-overlay');
@@ -1481,13 +1925,14 @@
             }
         }
 
+        // Closes sidebar when clicking outside on mobile
         document.addEventListener('click', function(event) {
             const sidebar = document.getElementById('sidebar');
             const menuButton = document.querySelector('[onclick="toggleSidebar()"]');
 
             const isClickInsideSidebar = sidebar.contains(event.target);
             const isClickOnMenuButton = menuButton && menuButton.contains(event.target);
-            const isMobile = window.innerWidth < 1024;
+            const isMobile = window.innerWidth < 1024; // Tailwind's 'lg' breakpoint
 
             if (!sidebar.classList.contains('-translate-x-full') && !isClickInsideSidebar && !isClickOnMenuButton && isMobile) {
                 closeSidebar();
@@ -1496,50 +1941,69 @@
 
 
         // --- Search Functionality ---
+
+        /**
+         * Handles course search based on user input.
+         * Filters courses in the active course list or my courses sections.
+         */
         document.getElementById('courseSearch').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 const searchTerm = this.value.toLowerCase();
-                const currentGridId = activeContent === 'courseList' ? 'courseListGrid' : 'myCoursesGrid';
+                const currentGridId = activeContent === 'courseList' ? 'courseListGrid' : 'myCoursesGrid'; // Only search in these two for now
                 const courseGrid = document.getElementById(currentGridId);
                 const courseCards = courseGrid.querySelectorAll('.course-card');
-                let visibleCount = 0;
-
+                
                 courseCards.forEach(card => {
                     const title = card.querySelector('h3').textContent.toLowerCase();
                     const description = card.querySelector('p.text-gray-700').textContent.toLowerCase();
                     const courseId = card.getAttribute('data-course-id');
 
                     let matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
-                    let isEnrolledInMyCourses = (activeContent === 'myCourses' && enrolledCourses[courseId] && enrolledCourses[courseId].enrolled);
+                    
                     let shouldDisplay = false;
 
                     if (activeContent === 'courseList') {
                         shouldDisplay = matchesSearch;
                     } else if (activeContent === 'myCourses') {
-                        shouldDisplay = isEnrolledInMyCourses && matchesSearch;
+                        // In "My Courses", it must be enrolled AND match search term
+                        const isEnrolled = enrolledCourses[courseId] && enrolledCourses[courseId].enrolled;
+                        shouldDisplay = isEnrolled && matchesSearch;
+                        // And ensure it's the specific my-course-card
+                        if (card.id !== `my-course-card-${courseId}`) {
+                            shouldDisplay = false;
+                        }
                     }
 
                     if (shouldDisplay) {
                         card.style.display = isGridView ? 'block' : 'flex';
                         card.classList.add('fade-in');
-                        visibleCount++;
+                        if (!isGridView) {
+                           card.classList.add('course-list-view'); // Add list view class if applicable
+                        }
                     } else {
                         card.style.display = 'none';
-                        card.classList.remove('fade-in');
+                        card.classList.remove('fade-in', 'course-list-view');
                     }
                 });
 
-                displayEmptyState(activeContent);
-                sortCourses(activeContent);
+                displayEmptyState(activeContent); // Update empty state after search
+                sortCourses(activeContent); // Re-sort after search
             }
         });
 
         // --- Empty State Management ---
+
+        /**
+         * Shows or hides the empty state message for a given section
+         * based on whether there are visible cards/items.
+         * @param {string} section - The ID of the section to check (e.g., 'courseList', 'myCourses').
+         */
         function displayEmptyState(section) {
             let emptyStateElement;
             let gridElement;
             let cardsSelector;
 
+            // Determine which elements to target based on the section
             if (section === 'courseList') {
                 emptyStateElement = document.getElementById('emptyStateCourseList');
                 gridElement = document.getElementById('courseListGrid');
@@ -1559,15 +2023,15 @@
             } else if (section === 'assignments') {
                 emptyStateElement = document.getElementById('emptyStateAssignments');
                 gridElement = document.getElementById('assignmentsList');
-                cardsSelector = '.bg-white.rounded-xl.shadow-md.p-6'; // Select assignment cards
+                cardsSelector = '.bg-white.rounded-xl.shadow-md.p-6';
             }
             else {
-                return;
+                return; // Exit if section is not handled
             }
 
+            // Filter for elements that are actually displayed (not 'hidden' via class or 'display: none')
             const visibleCards = Array.from(gridElement.querySelectorAll(cardsSelector))
-                                   .filter(card => card.style.display !== 'none' && !card.classList.contains('hidden'));
-
+                                       .filter(card => card.style.display !== 'none' && !card.classList.contains('hidden'));
 
             if (visibleCards.length === 0) {
                 emptyStateElement.classList.remove('hidden');
@@ -1578,11 +2042,16 @@
 
 
         // --- Update Dashboard ---
+
+        /**
+         * Updates the list of active courses displayed on the dashboard.
+         */
         function updateDashboardActiveCourses() {
             const activeCoursesList = document.getElementById('activeCoursesDashboard');
-            activeCoursesList.innerHTML = '';
+            activeCoursesList.innerHTML = ''; // Clear previous list
             let hasActiveCourse = false;
 
+            // Iterate through enrolled courses to find active ones
             for (const courseId in enrolledCourses) {
                 if (enrolledCourses[courseId].enrolled && !enrolledCourses[courseId].completed) {
                     const courseTitle = courseData[courseId] ? courseData[courseId].title : "Kursus Tidak Dikenal";
@@ -1597,15 +2066,20 @@
                 }
             }
 
+            // Display empty state if no active courses
             if (!hasActiveCourse) {
                 activeCoursesList.innerHTML = '<li>Belum ada kursus aktif. Daftar di "Pilih Mata Kuliah"!</li>';
             }
         }
 
         // --- Assignments Functions ---
+
+        /**
+         * Updates the list of assignments based on enrolled courses.
+         */
         function updateAssignments() {
             const assignmentsList = document.getElementById('assignmentsList');
-            // Clear existing assignments except for the empty state
+            // Clear existing assignments except for the empty state placeholder
             Array.from(assignmentsList.children).forEach(child => {
                 if (child.id !== 'emptyStateAssignments') {
                     child.remove();
@@ -1613,23 +2087,24 @@
             });
             let hasVisibleAssignment = false;
 
+            // Iterate through enrolled courses and their assignments
             for (const courseId in enrolledCourses) {
                 if (enrolledCourses[courseId].enrolled && courseData[courseId].assignments) {
                     courseData[courseId].assignments.forEach(assignment => {
-                        // Check if this specific assignment card exists as a template
+                        // Find the original template for the assignment card
                         const assignmentCardTemplate = document.getElementById(`assignment-card-${assignment.id}`);
                         if (assignmentCardTemplate) {
-                            const clonedCard = assignmentCardTemplate.cloneNode(true);
-                            clonedCard.id = `assignment-card-${assignment.id}-active`; // Give it a new ID to avoid duplication
-                            clonedCard.classList.remove('hidden');
+                            const clonedCard = assignmentCardTemplate.cloneNode(true); // Clone it
+                            clonedCard.id = `assignment-card-${assignment.id}-active`; // Assign unique ID to the cloned card
+                            clonedCard.classList.remove('hidden'); // Make it visible
 
-                            // Update dynamic content
+                            // Update dynamic content of the cloned card
                             clonedCard.querySelector('h3').textContent = assignment.title;
                             clonedCard.querySelector('p.text-gray-700.mb-2').textContent = `Kursus: ${courseData[courseId].title}`;
                             clonedCard.querySelector('p.text-gray-600.text-sm.mb-3 span').textContent = assignment.dueDate.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
                             clonedCard.querySelector('p.text-gray-700.text-sm.mb-4').textContent = assignment.description;
 
-                            // Add to the list
+                            // Insert the cloned card before the empty state message
                             assignmentsList.insertBefore(clonedCard, document.getElementById('emptyStateAssignments'));
                             hasVisibleAssignment = true;
                         }
@@ -1637,6 +2112,7 @@
                 }
             }
 
+            // Manage empty state for assignments
             if (!hasVisibleAssignment) {
                 document.getElementById('emptyStateAssignments').classList.remove('hidden');
             } else {
@@ -1646,19 +2122,26 @@
 
 
         // --- Calendar Functions ---
+
+        /**
+         * Generates the calendar grid for a given year and month.
+         * Populates event markers and sets up event handlers.
+         * @param {number} year - The year to display.
+         * @param {number} month - The month to display (0-11).
+         */
         function generateCalendar(year, month) {
             const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
             document.getElementById('currentMonthYear').textContent = `${monthNames[month]} ${year}`;
 
             const calendarDays = document.getElementById('calendarDays');
-            calendarDays.innerHTML = '';
+            calendarDays.innerHTML = ''; // Clear previous days
 
             const firstDay = new Date(year, month, 1);
             const lastDay = new Date(year, month + 1, 0);
             const numDays = lastDay.getDate();
             const startDay = firstDay.getDay(); // 0 for Sunday, 1 for Monday...
 
-            // Add empty days for the start of the month
+            // Add empty days for the start of the month (padding)
             for (let i = 0; i < startDay; i++) {
                 const emptyDay = document.createElement('div');
                 emptyDay.classList.add('calendar-day');
@@ -1668,17 +2151,20 @@
             const today = new Date();
             today.setHours(0, 0, 0, 0); // Normalize today for comparison
 
-            // Collect all events for the current month from enrolled courses
+            // Collect all relevant events for the current month from enrolled courses
             const monthEvents = [];
             for (const courseId in enrolledCourses) {
                 if (enrolledCourses[courseId].enrolled && courseData[courseId].events) {
                     courseData[courseId].events.forEach(event => {
                         const eventDate = new Date(event.date);
+                        eventDate.setHours(0, 0, 0, 0); // Normalize event date
                         if (eventDate.getFullYear() === year && eventDate.getMonth() === month) {
                             monthEvents.push({
+                                date: eventDate, // Store full date object
                                 day: eventDate.getDate(),
                                 title: event.title,
                                 type: event.type,
+                                description: event.description,
                                 courseTitle: courseData[courseId].title
                             });
                         }
@@ -1686,7 +2172,7 @@
                 }
             }
             
-            // Render days
+            // Render days of the month
             for (let day = 1; day <= numDays; day++) {
                 const dayElement = document.createElement('div');
                 dayElement.classList.add('calendar-day', 'current-month');
@@ -1695,63 +2181,80 @@
                 const currentDayDate = new Date(year, month, day);
                 currentDayDate.setHours(0, 0, 0, 0); // Normalize for comparison
 
+                // Highlight today's date
                 if (currentDayDate.getTime() === today.getTime()) {
                     dayElement.classList.add('today');
                 }
 
+                // Add event markers and attach click listener for events
                 const eventsOnThisDay = monthEvents.filter(event => event.day === day);
                 if (eventsOnThisDay.length > 0) {
                     dayElement.classList.add('has-event');
-                    // Add a small dot to indicate event
+                    // Add a small dot to indicate event presence
                     const dot = document.createElement('div');
                     dot.classList.add('event-dot');
                     dayElement.appendChild(dot);
                     
-                    // Add tooltip or popover for events if needed (beyond this scope)
-                    // For now, just add a title for hover
+                    // Add title for hover tooltip with event summaries
                     dayElement.title = eventsOnThisDay.map(e => `${e.title} (${e.courseTitle})`).join('\n');
                 }
                 
+                // Add click listener to show events for the selected day in the agenda list
                 dayElement.addEventListener('click', () => showDayEvents(currentDayDate, eventsOnThisDay));
 
                 calendarDays.appendChild(dayElement);
             }
 
-            // Show events for today when calendar is generated
+            // Automatically show events for today when calendar is loaded/generated
             showDayEvents(today, monthEvents.filter(event => event.day === today.getDate()));
         }
 
+        /**
+         * Displays the events for a specific day in the "Agenda Hari Ini" section.
+         * @param {Date} date - The date object for which to show events.
+         * @param {Array<Object>} events - An array of event objects for that specific day.
+         */
         function showDayEvents(date, events) {
             const todayEventsList = document.getElementById('todayEvents');
-            todayEventsList.innerHTML = '';
+            todayEventsList.innerHTML = ''; // Clear previous events
             
-            // Format the clicked date for display
+            // Format the clicked date for display in the agenda header
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             todayEventsList.innerHTML = `<li class="font-semibold text-gray-800 mb-2">Agenda ${date.toLocaleDateString('id-ID', options)}:</li>`;
 
             if (events.length > 0) {
+                // Sort events by type (e.g., assignments first) or time if available
+                events.sort((a, b) => {
+                    if (a.type === 'assignment' && b.type !== 'assignment') return -1;
+                    if (a.type !== 'assignment' && b.type === 'assignment') return 1;
+                    return 0; // Maintain original order if types are same or not special
+                });
+
                 events.forEach(event => {
                     const listItem = document.createElement('li');
-                    let icon = '';
-                    let color = '';
+                    let iconClass = '';
+                    let colorClass = '';
+                    // Determine icon and color based on event type
                     if (event.type === 'assignment') {
-                        icon = '<i class="fas fa-tasks mr-2 text-red-500"></i>';
-                        color = 'text-red-700';
+                        iconClass = 'fa-tasks';
+                        colorClass = 'text-red-700';
                     } else if (event.type === 'exam') {
-                        icon = '<i class="fas fa-file-alt mr-2 text-purple-500"></i>';
-                        color = 'text-purple-700';
+                        iconClass = 'fa-file-alt';
+                        colorClass = 'text-purple-700';
                     } else if (event.type === 'live') {
-                         icon = '<i class="fas fa-video mr-2 text-green-500"></i>';
-                         color = 'text-green-700';
+                        iconClass = 'fa-video';
+                        colorClass = 'text-green-700';
                     } else if (event.type === 'meeting') {
-                         icon = '<i class="fas fa-calendar-check mr-2 text-blue-500"></i>';
-                         color = 'text-blue-700';
+                        iconClass = 'fa-calendar-check';
+                        colorClass = 'text-blue-700';
                     } else {
-                        icon = '<i class="fas fa-info-circle mr-2 text-gray-500"></i>';
-                        color = 'text-gray-700';
+                        iconClass = 'fa-info-circle';
+                        colorClass = 'text-gray-700';
                     }
-                    listItem.className = `flex items-center text-sm ${color}`;
-                    listItem.innerHTML = `${icon} <span>${event.title} (${event.courseTitle})</span>`;
+                    listItem.className = `flex items-center text-sm ${colorClass} p-1 rounded-md hover:bg-gray-100 cursor-pointer`;
+                    listItem.innerHTML = `<i class="fas ${iconClass} mr-2"></i> <span>${event.title} (${event.courseTitle})</span>`;
+                    // Add click handler to show event details in a modal
+                    listItem.onclick = () => openEventDetailModal(event);
                     todayEventsList.appendChild(listItem);
                 });
             } else {
@@ -1762,8 +2265,28 @@
             }
         }
 
+        /**
+         * Opens a modal to display detailed information about an event.
+         * @param {Object} event - The event object to display.
+         */
+        function openEventDetailModal(event) {
+            document.getElementById('modalEventTitle').textContent = event.title;
+            document.getElementById('modalEventDate').textContent = `Tanggal: ${event.date.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`;
+            document.getElementById('modalEventCourse').textContent = `Kursus: ${event.courseTitle}`;
+            document.getElementById('modalEventDescription').textContent = event.description || 'Tidak ada deskripsi.';
 
-        // Calendar navigation
+            document.getElementById('eventDetailModal').classList.add('open');
+        }
+
+        /**
+         * Closes the specified modal.
+         * @param {string} modalId - The ID of the modal to close.
+         */
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('open');
+        }
+
+        // Calendar navigation handlers
         document.getElementById('prevMonth').addEventListener('click', () => {
             currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
             generateCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth());
@@ -1775,20 +2298,78 @@
         });
 
         // --- Forum Functions ---
+
+        /**
+         * Simulates viewing a specific forum topic.
+         * @param {string} courseId - The ID of the course associated with the topic.
+         * @param {string} topicTitle - The title of the forum topic.
+         */
         function viewForumTopic(courseId, topicTitle) {
-            alert(`Membuka diskusi:\nKursus: ${courseData[courseId].title}\nTopik: ${topicTitle}\n\n(Ini akan mengarahkan ke halaman detail topik di aplikasi nyata)`);
-            // In a real application, you'd navigate to a specific forum topic page/modal
-            // For now, it's just an alert. You could expand the forumContent div to show topic details.
+            showNotification('info', `Membuka Diskusi`, `Membuka topik: "${topicTitle}" dari kursus ${courseData[courseId].title}`);
+            // In a real application, this would navigate to a specific forum topic page/modal.
+        }
+
+        // --- Global Notification System ---
+
+        /**
+         * Displays a temporary notification message.
+         * @param {'success' | 'info' | 'error'} type - The type of notification (influences color/icon).
+         * @param {string} title - The title of the notification.
+         * @param {string} message - The main message content.
+         * @param {number} duration - How long the notification stays (in ms). Default is 5000ms.
+         */
+        function showNotification(type, title, message, duration = 5000) {
+            const container = document.getElementById('notification-container');
+            if (!container) return;
+
+            const notificationElement = document.createElement('div');
+            notificationElement.classList.add('notification', type);
+
+            let iconHtml = '';
+            if (type === 'success') iconHtml = '<i class="fas fa-check-circle notification-icon"></i>';
+            else if (type === 'info') iconHtml = '<i class="fas fa-info-circle notification-icon"></i>';
+            else if (type === 'error') iconHtml = '<i class="fas fa-times-circle notification-icon"></i>';
+
+            notificationElement.innerHTML = `
+                ${iconHtml}
+                <div>
+                    <div class="font-bold">${title}</div>
+                    <div class="text-sm">${message}</div>
+                </div>
+            `;
+
+            container.appendChild(notificationElement);
+
+            // Remove notification after duration
+            setTimeout(() => {
+                notificationElement.remove();
+            }, duration);
+        }
+
+        // --- Greeting Function ---
+
+        /**
+         * Displays a greeting message to the user on their first visit.
+         * Uses localStorage to track if the greeting has been shown before.
+         */
+        function showGreeting() {
+            const hasVisited = localStorage.getItem('hasVisitedVeteranLearn');
+            if (!hasVisited) {
+                showNotification('info', 'Selamat Datang!', `Halo ${userName}! Selamat datang di VeteranLearn. Kami senang Anda ada di sini. Jelajahi kursus-kursus menarik kami!`, 7000);
+                localStorage.setItem('hasVisitedVeteranLearn', 'true');
+            }
         }
 
 
-        // --- Initial Load Logic ---
+        // --- Initial Load Logic (Executed when the DOM is fully loaded) ---
         document.addEventListener('DOMContentLoaded', () => {
-            // Populate courseData with correct category and level_key for filtering
-            // Also adding `newness` for sorting
+            // Populate `courseData` with correct attributes for filtering/sorting from initial HTML markup.
+            // This is crucial for filters and sorts to work correctly on static cards.
             document.querySelectorAll('.course-card').forEach(card => {
                 const courseId = card.getAttribute('data-course-id');
-                if (courseData[courseId]) { // Ensure courseData exists for this ID
+                // Ensure data-attributes from HTML are reflected in the `courseData` object
+                // if they are not already there or need to be overridden.
+                if (courseData[courseId]) {
                     courseData[courseId].category = card.getAttribute('data-category');
                     courseData[courseId].level_key = card.getAttribute('data-level');
                     courseData[courseId].rating = parseFloat(card.getAttribute('data-rating'));
@@ -1797,7 +2378,8 @@
                 }
             });
 
-            // Initialize the enrollment status and buttons for existing cards on page load (in "Pilih Mata Kuliah" grid)
+            // Initialize the enrollment status and buttons for existing cards on page load
+            // in the "Pilih Mata Kuliah" grid.
             document.querySelectorAll('#courseListGrid .course-card').forEach(card => {
                 const courseId = card.getAttribute('data-course-id');
                 const enrollButton = card.querySelector('button:last-child'); // Target the "Daftar" button
@@ -1812,19 +2394,20 @@
                 }
             });
 
-            // Initialize display of cards in "Kursus Saya", "Progress", and "Sertifikat" grids based on `enrolledCourses`
+            // Initialize display of cards in "Kursus Saya", "Progress", and "Sertifikat" grids
+            // based on `enrolledCourses` data. This is done by toggling the 'hidden' class.
             Object.keys(courseData).forEach(courseId => {
                 const myCourseCard = document.getElementById(`my-course-card-${courseId}`);
                 const progressCard = document.getElementById(`progress-card-${courseId}`);
                 const certificateCard = document.getElementById(`certificate-card-${courseId}`);
 
-                // Update "Kursus Saya" cards: hidden by default, shown by filterCourses when active.
-                // Just ensure their initial state reflects enrollment if they are part of the template.
+                // "Kursus Saya" cards: hidden by default, shown if enrolled.
                 if (myCourseCard) {
                     myCourseCard.classList.toggle('hidden', !(enrolledCourses[courseId] && enrolledCourses[courseId].enrolled));
                 }
 
-                // Update "Progress" cards: hidden by default, shown by filterCourses when active.
+                // "Progress" cards: hidden by default, shown if enrolled.
+                // Also update their progress bars and text.
                 if (progressCard) {
                     progressCard.classList.toggle('hidden', !(enrolledCourses[courseId] && enrolledCourses[courseId].enrolled));
                     if (enrolledCourses[courseId] && enrolledCourses[courseId].enrolled) {
@@ -1838,14 +2421,17 @@
                     }
                 }
 
-                // Update "Sertifikat" cards: hidden by default, shown by filterCourses when active.
+                // "Sertifikat" cards: hidden by default, shown if completed AND has certificate.
                 if (certificateCard) {
                     certificateCard.classList.toggle('hidden', !(enrolledCourses[courseId] && enrolledCourses[courseId].completed && courseData[courseId].hasCertificate));
                 }
             });
 
-            // Set the initial active navigation item and content (e.g., 'Pilih Mata Kuliah')
+            // Set the initial active navigation item and content to 'Pilih Mata Kuliah'.
             setActiveNav(document.querySelector('.nav-item[onclick*=\'courseList\']'), 'courseList');
+
+            // Show the initial greeting message to the user.
+            showGreeting();
         });
     </script>
 </body>
